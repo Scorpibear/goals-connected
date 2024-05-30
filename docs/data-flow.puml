@@ -1,0 +1,37 @@
+@startuml data-flow
+title Data Flow
+
+actor User
+entity App
+entity GoalsTreeView
+entity TreeItem
+entity BackendClient
+entity AzureFunction
+entity AzureStorage
+
+group View
+User -> App : open
+App -> GoalsTreeView:render()
+GoalsTreeView -> BackendClient : getGoalsTree()
+BackendClient -> AzureFunction : GET /goals
+AzureFunction -> AzureStorage : get()
+AzureFunction <-- AzureStorage : full data json
+GoalsTreeView <-- AzureFunction : json, list of goals with children
+GoalsTreeView -> TreeItem : render()
+User <-- GoalsTreeView : show all goals
+end
+
+group Update
+User -> App:update goal
+App -> TreeItem : update()
+TreeItem -> TreeItem : update view
+TreeItem -> BackendClient : update()
+BackendClient -> AzureFunction : PUT /goal?id={id}
+AzureFunction -> AzureStorage : get
+AzureFunction <-- AzureStorage : goals tree
+AzureFunction -> AzureFunction : find by id
+AzureFunction -> AzureFunction : update
+AzureFunction -> AzureStorage : save
+end
+
+@enduml
