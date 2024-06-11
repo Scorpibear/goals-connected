@@ -4,6 +4,30 @@ export class GoalsBackend {
     this.key = key || 'ubG0PmjhlrhsErJr7xz6SunsD6QJK-FMy8_UHHKU1oQUAzFudzaInQ%3D%3D'
   }
 
+  async create(goalData) {
+    try {
+      console.log(`Creating the goal with data: '${JSON.stringify(goalData)}'`)
+      const url = this.apiPath2url('/goal')
+      const response = await fetch(url, { method: 'POST', body: JSON.stringify(goalData) })
+      return response.json()
+    } catch (ex) {
+      console.error('Issue while creating the goal: ' + ex)
+    }
+  }
+
+  delete(goalId) {
+    try {
+      console.log(`Deleting the goal with id = '${goalId}'`)
+      const apiPath = '/goal'
+      const url = `${this.apiPath2url(apiPath)}&id=${goalId}`
+      return fetch(url, {
+        method: 'DELETE'
+      })
+    } catch (ex) {
+      console.error('Issue while deleting the goal: ' + ex)
+    }
+  }
+
   static getDefaultInstance() {
     return (GoalsBackend.defaultInstance ||= new GoalsBackend())
   }
@@ -45,7 +69,7 @@ export class GoalsBackend {
     return this.fetchGoals('/actgoals')
   }
 
-  async getResultGoals() {
+  getResultGoals() {
     return this.fetchGoals('/resultgoals')
   }
 

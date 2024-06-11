@@ -20,6 +20,7 @@ const goalsList = ref(props.initGoals)
 onMounted(async () => {
   try {
     goalsList.value = await props.backend.getTimeline()
+    goalsList.value.forEach((section) => (section.id = Math.random()))
   } finally {
     // TODO: load from localstorage
   }
@@ -29,12 +30,12 @@ onMounted(async () => {
 <template>
   <table>
     <tr>
-      <th v-for="section in goalsList" v-bind:key="section.title">
+      <th v-for="section in goalsList" :key="section.title">
         {{ section.title }}
       </th>
     </tr>
     <tr>
-      <td v-for="section in goalsList" v-bind:key="section.title">
+      <td v-for="section in goalsList" :key="section.id">
         <GoalsTree :initGoals="section.goals"></GoalsTree>
       </td>
     </tr>
@@ -51,6 +52,10 @@ h1 {
 
 h3 {
   font-size: 1.2rem;
+}
+
+td {
+  vertical-align: top;
 }
 
 .item {

@@ -6,7 +6,5 @@ const backend = GoalsBackend.getDefaultInstance()
 </script>
 
 <template>
-  <main>
-    <ActGoals :backend />
-  </main>
+  <ActGoals :backend />
 </template>

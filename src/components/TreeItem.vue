@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { GoalsBackend } from '../services/goals-backend'
+import EditGoal from './EditGoal.vue'
 
 const props = defineProps({
   model: Object,
@@ -9,6 +10,11 @@ const props = defineProps({
     default: GoalsBackend.getDefaultInstance()
   }
 })
+
+const emit = defineEmits(['create', 'delete'])
+
+const newGoalTitle = 'new goal'
+const newGoalId = 'id-new-tbd'
 
 const isOpen = ref(false)
 const editMode = ref(false)
@@ -28,60 +34,114 @@ function changeType() {
   }
 }
 
-function addChild() {
-  props.model.children.push({ title: 'new goal', id: Date.now() })
+function startCreation() {
+  props.model.children.push({ id: newGoalId, title: newGoalTitle })
 }
 
-let beforeEditCache = ''
-function edit() {
-  beforeEditCache = props.model.title
+// called when child is already in UI tree and edit finished, so we just need to send request to backend and update id
+async function addChild(goal) {
+  if (goal) {
+    try {
+      const serverData = await props.backend.create({ parentId: props.model.id, ...goal })
+      if (serverData?.id) {
+        goal.id = serverData.id
+      } else {
+        console.error(
+          `The goal created by id was not provided by server. Server data: `,
+          serverData
+        )
+      }
+    } catch (ex) {
+      console.error(`Issue with goal creation: ` + ex)
+    }
+  }
+}
+
+function startEdit() {
   editMode.value = true
 }
 
-function cancelEdit() {
-  props.model.title = beforeEditCache
+// only valid goal properties has to be updated, other source properties to be ignored. Id should remain unchanged
+const updateGoalProperties = (target, source) =>
+  ['title', 'targetDate', 'tags', 'type'].reduce((target, propertyName) => {
+    if (propertyName in source) {
+      target[propertyName] = source[propertyName]
+    }
+    return target
+  }, target)
+
+function doneEdit(updatedGoalData) {
+  console.debug('TreeItem:doneEdit:updatedGoalData:', updatedGoalData)
+  if (updatedGoalData) {
+    updateGoalProperties(props.model, updatedGoalData)
+    if (newGoal) {
+      emit('create', props.model)
+    } else {
+      props.backend.updateGoal(updatedGoalData)
+    }
+  }
   editMode.value = false
 }
 
-function doneEdit() {
-  if (props.model.title.trim()) {
-    props.model.title = props.model.title.trim()
-    editMode.value = false
-    if (beforeEditCache != props.model.title) {
-      props.backend.updateGoal({ ...props.model, children: undefined })
-    }
-  } else {
-    cancelEdit()
+function openDeleteConfirmation() {
+  if (window.confirm('Do you really want to delete the goal?')) {
+    setTimeout(() => emit('delete', props.model.id))
+    props.backend.delete(props.model.id)
   }
 }
+
+function deleteChild(goalId) {
+  if (!goalId) return console.error(`Could not delete the goal as id was not provided`)
+  const childIndex = props.model.children.findIndex((goal) => goal.id == goalId)
+  if (childIndex != -1) {
+    console.log(
+      `Deleting goal id=${goalId} at index=${childIndex}. Parent goal: ${props.model.title}`
+    )
+    console.log(
+      `Children before splice: `,
+      props.model.children.map((child) => child.title).join(',')
+    )
+    props.model.children.splice(childIndex, 1)
+    console.log(
+      `Children after splice: `,
+      props.model.children.map((child) => child.title).join(',')
+    )
+  } else {
+    console.error(`Attemting to delete not-existent goal with id='${goalId}'`)
+  }
+}
+
+let newGoal = false
+
+onMounted(() => {
+  if (props.model.id == newGoalId) {
+    newGoal = true
+    startEdit()
+  }
+})
 </script>
 
 <template>
   <li>
     <div :class="{ bold: isFolder }">
       <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span>
-      <span v-else class="sign">&nbsp;-&nbsp;</span>
-      <label v-if="!editMode" @dblclick="edit">{{ model.title }}</label>
-      <input
-        v-else
-        class="edit"
-        type="text"
-        v-model="model.title"
-        @vue:mounted="({ el }) => el.focus()"
-        @blur="doneEdit"
-        @keyup.enter="doneEdit"
-        @keyup.escape="cancelEdit"
-        :size="model.title.length"
-      />
+      <span v-else class="sign" @dblclick="startEdit">&nbsp;-&nbsp;</span>
+      <label v-if="!editMode" @dblclick="startEdit">{{ model.title }}</label>
+      <EditGoal v-else :model @doneEdit="doneEdit" />
       <span v-if="!isFolder" class="sign" @dblclick="changeType">[+]</span>
+      <span v-if="!isFolder" class="sign" @click="openDeleteConfirmation">[x]</span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
-      <!--
-        A component can recursively render itself using its
-        "name" option (inferred from filename if using SFC)
-      -->
-      <TreeItem class="item" v-for="model in model.children" :model="model"> </TreeItem>
-      <li class="add sign" @click="addChild">&nbsp;+&nbsp;</li>
+      <TreeItem
+        class="item"
+        v-for="model in model.children"
+        :model="model"
+        @create="addChild"
+        @delete="deleteChild"
+        v-bind:key="model.id"
+      >
+      </TreeItem>
+      <li class="add sign" @click="startCreation">&nbsp;+&nbsp;</li>
     </ul>
   </li>
 </template>

@@ -1,8 +1,40 @@
 import { GoalsBackend } from './goals-backend'
 import { vi } from 'vitest'
 
+const response = { json: () => Promise.resolve({}) }
+const fetchResultStub = Promise.resolve(response)
+
+/*global global*/
+
+describe('create', () => {
+  let backend
+  beforeEach(() => {
+    backend = new GoalsBackend()
+  })
+  it('executes POST /goal request', () => {
+    vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
+    let goalData = { title: 'new title', id: 'id2', parentId: 'id1' }
+
+    backend.create(goalData)
+
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/goal'), {
+      method: 'POST',
+      body: JSON.stringify(goalData)
+    })
+  })
+  it('provides json data as output', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
+    vi.spyOn(response, 'json').mockResolvedValue({ id: 'server-provided', title: 'goal1' })
+
+    const output = await backend.create({ id: 'local-id', title: 'goal1' })
+
+    expect(output).toEqual({ id: 'server-provided', title: 'goal1' })
+  })
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+})
 describe('getActGoals', () => {
-  const fetchResultStub = Promise.resolve({ json: Promise.resolve({}) })
   it('fetch is used', () => {
     vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
     let backend = new GoalsBackend()

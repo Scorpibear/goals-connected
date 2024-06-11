@@ -1,21 +1,23 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+
+import GCFooter from './components/GCFooter.vue'
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
+  <div>
+    <header>
       <nav>
         <RouterLink to="/">Goals Tree</RouterLink>
         <RouterLink to="/result">Result goals</RouterLink>
         <RouterLink to="/act">Action goals</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/timeline">Timeline</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
       </nav>
-    </div>
-  </header>
-
-  <RouterView />
+    </header>
+    <main><RouterView /></main>
+    <GCFooter></GCFooter>
+  </div>
 </template>
 
 <style scoped>
@@ -24,16 +26,12 @@ header {
   max-height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
 nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  text-transform: uppercase;
 }
 
 nav a.router-link-exact-active {
@@ -57,16 +55,6 @@ nav a:first-of-type {
 @media (min-width: 1024px) {
   header {
     display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
   }
@@ -79,5 +67,9 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+
+main {
+  min-width: 50rem;
 }
 </style>
