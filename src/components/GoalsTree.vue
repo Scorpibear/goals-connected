@@ -9,7 +9,11 @@ const props = defineProps({
       return []
     }
   },
-  backend: Object
+  backend: Object,
+  collapsed: {
+    type: Boolean,
+    default: true
+  }
 })
 
 const goalsList = ref(props.initGoals)
@@ -27,7 +31,13 @@ onMounted(async () => {
 
 <template>
   <ul>
-    <TreeItem class="item" v-for="goal in goalsList" :model="goal" v-bind:key="goal.id"></TreeItem>
+    <TreeItem
+      class="item"
+      v-for="goal in goalsList"
+      :model="goal"
+      v-bind:key="goal.id"
+      :collapsed="props.collapsed"
+    ></TreeItem>
   </ul>
 </template>
 

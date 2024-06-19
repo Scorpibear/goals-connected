@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { GoalsBackend } from '../services/goals-backend'
+import { formatDate } from '../services/date-utils'
 import EditGoal from './EditGoal.vue'
 
 const props = defineProps({
@@ -8,6 +9,10 @@ const props = defineProps({
   backend: {
     type: Object,
     default: GoalsBackend.getDefaultInstance()
+  },
+  collapsed: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -16,7 +21,7 @@ const emit = defineEmits(['create', 'delete'])
 const newGoalTitle = 'new goal'
 const newGoalId = 'id-new-tbd'
 
-const isOpen = ref(false)
+const isOpen = ref(!props.collapsed)
 const editMode = ref(false)
 const isFolder = computed(() => {
   return props.model.children?.length
@@ -29,13 +34,13 @@ function toggle() {
 function changeType() {
   if (!isFolder.value) {
     props.model.children = []
-    addChild()
+    startCreation()
     isOpen.value = true
   }
 }
 
 function startCreation() {
-  props.model.children.push({ id: newGoalId, title: newGoalTitle })
+  props.model.children.push({ id: newGoalId, title: newGoalTitle, tags: props.model.tags })
 }
 
 // called when child is already in UI tree and edit finished, so we just need to send request to backend and update id
@@ -124,18 +129,24 @@ onMounted(() => {
 <template>
   <li>
     <div :class="{ bold: isFolder }">
-      <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span>
-      <span v-else class="sign" @dblclick="startEdit">&nbsp;-&nbsp;</span>
-      <label v-if="!editMode" @dblclick="startEdit">{{ model.title }}</label>
-      <EditGoal v-else :model @doneEdit="doneEdit" />
-      <span v-if="!isFolder" class="sign" @dblclick="changeType">[+]</span>
-      <span v-if="!isFolder" class="sign" @click="openDeleteConfirmation">[x]</span>
+      <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span
+      ><span v-else class="sign" @dblclick="startEdit">&nbsp;-&nbsp;</span
+      ><label v-if="!editMode" @dblclick="startEdit"
+        >{{ model.title
+        }}<span v-if="model.targetDate"> к {{ formatDate(model.targetDate) }}</span></label
+      ><EditGoal v-else :model @doneEdit="doneEdit" /><span
+        v-if="!isFolder"
+        class="sign"
+        @dblclick="changeType"
+        >[+]</span
+      ><span v-if="!isFolder" class="sign" @click="openDeleteConfirmation">[x]</span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
       <TreeItem
         class="item"
         v-for="model in model.children"
         :model="model"
+        :collapsed="props.collapsed"
         @create="addChild"
         @delete="deleteChild"
         v-bind:key="model.id"
@@ -147,10 +158,10 @@ onMounted(() => {
 </template>
 
 <style>
-ul {
-  list-style-type: none;
-}
 .sign {
   font-family: monospace;
+}
+label {
+  cursor: pointer;
 }
 </style>
