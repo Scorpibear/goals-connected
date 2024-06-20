@@ -64,7 +64,7 @@ td {
 }
 @media (min-width: 1024px) {
   td.goals {
-    min-width: 350px;
+    min-width: 270px;
     font-size: small;
   }
 }
@@ -80,5 +80,8 @@ th,
 td {
   border: 1px solid black;
   border-collapse: collapse;
+}
+ul {
+  padding-inline-start: 5px;
 }
 </style>

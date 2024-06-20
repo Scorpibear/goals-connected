@@ -16,6 +16,8 @@ const props = defineProps({
   }
 })
 
+const selected = ref(false)
+
 const emit = defineEmits(['create', 'delete'])
 
 const newGoalTitle = 'new goal'
@@ -128,18 +130,18 @@ onMounted(() => {
 
 <template>
   <li>
-    <div :class="{ bold: isFolder }">
+    <div :class="{ bold: isFolder }" @mouseenter="selected = true" @mouseleave="selected = false">
       <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span
       ><span v-else class="sign" @dblclick="startEdit">&nbsp;-&nbsp;</span
       ><label v-if="!editMode" @dblclick="startEdit"
         >{{ model.title
         }}<span v-if="model.targetDate"> к {{ formatDate(model.targetDate) }}</span></label
       ><EditGoal v-else :model @doneEdit="doneEdit" /><span
-        v-if="!isFolder"
+        v-if="!isFolder && selected"
         class="sign"
         @dblclick="changeType"
         >[+]</span
-      ><span v-if="!isFolder" class="sign" @click="openDeleteConfirmation">[x]</span>
+      ><span v-if="!isFolder && selected" class="sign" @click="openDeleteConfirmation">[x]</span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
       <TreeItem
