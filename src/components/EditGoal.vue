@@ -55,7 +55,7 @@ function cancelEdit() {
   ><vue-tags-input
     v-model="tag"
     :tags="tags"
-    :autocomplete-items="categories"
+    :autocomplete-items="categories.map((category) => ({ text: category }))"
     @tags-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
     @tag-order-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
   />

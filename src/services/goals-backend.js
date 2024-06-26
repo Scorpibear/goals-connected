@@ -1,7 +1,7 @@
 export class GoalsBackend {
   constructor(endpoint, key) {
     this.endpoint = endpoint || 'https://goalsconnected.azurewebsites.net/api'
-    this.key = key || 'ubG0PmjhlrhsErJr7xz6SunsD6QJK-FMy8_UHHKU1oQUAzFudzaInQ%3D%3D'
+    this.key = key || 'cYt1GnWRW1KjJY7eW6-jzOqk-Mctdd-cUWNavGoN9RvHAzFuGD4Tkw=='
   }
 
   async create(goalData) {
@@ -75,5 +75,29 @@ export class GoalsBackend {
 
   getTimeline() {
     return this.fetchGoals('/timeline')
+  }
+
+  async moveUp(id) {
+    return this.patch(id, 'moveUp')
+  }
+
+  async levelUp(id) {
+    return this.patch(id, 'levelUp')
+  }
+
+  async levelDown(id) {
+    return this.patch(id, 'levelDown')
+  }
+
+  async patch(id, action) {
+    try {
+      const apiPath = '/goal'
+      const url = `${this.apiPath2url(apiPath)}&id=${id}&action=${action}`
+
+      const response = await fetch(url, { method: 'PATCH' })
+      return response.text()
+    } catch (ex) {
+      console.error(`Could not ${action} the goal: `, ex)
+    }
   }
 }

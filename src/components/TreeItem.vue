@@ -13,12 +13,16 @@ const props = defineProps({
   collapsed: {
     type: Boolean,
     default: true
+  },
+  container: {
+    type: Array,
+    default: null
   }
 })
 
 const selected = ref(false)
 
-const emit = defineEmits(['create', 'delete'])
+const emit = defineEmits(['create', 'delete', 'levelUp'])
 
 const newGoalTitle = 'new goal'
 const newGoalId = 'id-new-tbd'
@@ -101,21 +105,42 @@ function deleteChild(goalId) {
   if (!goalId) return console.error(`Could not delete the goal as id was not provided`)
   const childIndex = props.model.children.findIndex((goal) => goal.id == goalId)
   if (childIndex != -1) {
-    console.log(
-      `Deleting goal id=${goalId} at index=${childIndex}. Parent goal: ${props.model.title}`
-    )
-    console.log(
-      `Children before splice: `,
-      props.model.children.map((child) => child.title).join(',')
-    )
     props.model.children.splice(childIndex, 1)
-    console.log(
-      `Children after splice: `,
-      props.model.children.map((child) => child.title).join(',')
-    )
   } else {
     console.error(`Attemting to delete not-existent goal with id='${goalId}'`)
   }
+}
+
+function moveUp() {
+  const index = props.container?.findIndex((goal) => goal.id == props.model.id)
+  if (index > 0) {
+    props.container.splice(index - 1, 2, props.container[index], props.container[index - 1])
+    props.backend.moveUp(props.model.id)
+  }
+}
+
+function levelDown() {
+  const index = props.container?.findIndex((goal) => goal.id == props.model.id)
+  if (index > 0) {
+    const newParent = props.container[index - 1]
+    if (!newParent.children) newParent.children = []
+    newParent.children.push(props.model)
+    props.container.splice(index, 1)
+    props.backend.levelDown(props.model.id)
+  }
+}
+
+function levelUp() {
+  emit('levelUp', props.model.id)
+  props.backend.levelUp(props.model.id)
+}
+
+function levelChildUp(childId) {
+  const indexInContainer = props.container.findIndex((goal) => goal.id == props.model.id)
+  const indexOfChild = props.model.children.findIndex((goal) => goal.id == childId)
+  props.container.splice(indexInContainer + 1, 0, props.model.children[indexOfChild])
+  props.model.children.splice(indexOfChild, 1)
+  if (!props.model.children.length) delete props.model.children
 }
 
 let newGoal = false
@@ -141,20 +166,25 @@ onMounted(() => {
         class="sign"
         @dblclick="changeType"
         >[+]</span
-      ><span v-if="!isFolder && selected" class="sign" @click="openDeleteConfirmation">[x]</span>
+      ><span v-if="isFolder && selected" class="sign" @dblclick="startCreation">[+]</span>
+      <span v-if="selected" class="sign" @click="levelUp">[←]</span>
+      <span v-if="selected && container?.length" class="sign" @click="moveUp">[↑]</span>
+      <span v-if="selected && container?.length" class="sign" @click="levelDown">[→]</span>
+      <span v-if="!isFolder && selected" class="sign" @click="openDeleteConfirmation">[x]</span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
       <TreeItem
         class="item"
-        v-for="model in model.children"
+        v-for="(model, index) in model.children"
         :model="model"
         :collapsed="props.collapsed"
         @create="addChild"
         @delete="deleteChild"
         v-bind:key="model.id"
+        :container="index ? props.model.children : null"
+        @levelUp="levelChildUp"
       >
       </TreeItem>
-      <li class="add sign" @click="startCreation">&nbsp;+&nbsp;</li>
     </ul>
   </li>
 </template>

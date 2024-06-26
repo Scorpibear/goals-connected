@@ -33,10 +33,11 @@ onMounted(async () => {
   <ul>
     <TreeItem
       class="item"
-      v-for="goal in goalsList"
+      v-for="(goal, index) in goalsList"
       :model="goal"
       v-bind:key="goal.id"
       :collapsed="props.collapsed"
+      :container="index ? goalsList : null"
     ></TreeItem>
   </ul>
 </template>
