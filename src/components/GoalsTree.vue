@@ -13,10 +13,18 @@ const props = defineProps({
   collapsed: {
     type: Boolean,
     default: true
-  }
+  },
+  moveConfig: Object
 })
 
 const goalsList = ref(props.initGoals)
+
+function onDelete(goalId) {
+  const goalIndex = goalsList.value.findIndex(({ id }) => id == goalId)
+  if (goalIndex >= 0) {
+    goalsList.value.splice(goalIndex, 1)
+  }
+}
 
 onMounted(async () => {
   try {
@@ -35,9 +43,11 @@ onMounted(async () => {
       class="item"
       v-for="(goal, index) in goalsList"
       :model="goal"
-      v-bind:key="goal.id"
+      :key="goal.id"
       :collapsed="props.collapsed"
       :container="index ? goalsList : null"
+      :moveConfig="moveConfig"
+      @delete="onDelete"
     ></TreeItem>
   </ul>
 </template>

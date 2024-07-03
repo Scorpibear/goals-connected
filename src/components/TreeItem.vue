@@ -17,7 +17,9 @@ const props = defineProps({
   container: {
     type: Array,
     default: null
-  }
+  },
+  moveConfig: Object,
+  parent: Object
 })
 
 const selected = ref(false)
@@ -46,7 +48,12 @@ function changeType() {
 }
 
 function startCreation() {
-  props.model.children.push({ id: newGoalId, title: newGoalTitle, tags: props.model.tags })
+  props.model.children.push({
+    id: newGoalId,
+    title: newGoalTitle,
+    tags: props.model.tags,
+    type: props.model.type == 2 ? 2 : undefined
+  })
 }
 
 // called when child is already in UI tree and edit finished, so we just need to send request to backend and update id
@@ -56,6 +63,7 @@ async function addChild(goal) {
       const serverData = await props.backend.create({ parentId: props.model.id, ...goal })
       if (serverData?.id) {
         goal.id = serverData.id
+        goal.targetDate ||= serverData.targetDate
       } else {
         console.error(
           `The goal created by id was not provided by server. Server data: `,
@@ -136,11 +144,13 @@ function levelUp() {
 }
 
 function levelChildUp(childId) {
-  const indexInContainer = props.container.findIndex((goal) => goal.id == props.model.id)
-  const indexOfChild = props.model.children.findIndex((goal) => goal.id == childId)
-  props.container.splice(indexInContainer + 1, 0, props.model.children[indexOfChild])
-  props.model.children.splice(indexOfChild, 1)
-  if (!props.model.children.length) delete props.model.children
+  if (props.container) {
+    const indexInContainer = props.container.findIndex((goal) => goal.id == props.model.id)
+    const indexOfChild = props.model.children.findIndex((goal) => goal.id == childId)
+    props.container.splice(indexInContainer + 1, 0, props.model.children[indexOfChild])
+    props.model.children.splice(indexOfChild, 1)
+    if (!props.model.children.length) delete props.model.children
+  }
 }
 
 let newGoal = false
@@ -167,22 +177,46 @@ onMounted(() => {
         @dblclick="changeType"
         >[+]</span
       ><span v-if="isFolder && selected" class="sign" @dblclick="startCreation">[+]</span>
-      <span v-if="selected" class="sign" @click="levelUp">[←]</span>
-      <span v-if="selected && container?.length" class="sign" @click="moveUp">[↑]</span>
-      <span v-if="selected && container?.length" class="sign" @click="levelDown">[→]</span>
+      <span v-if="selected && props.parent" class="sign" @click="levelUp">[←]</span>
+      <span
+        v-if="selected && !props.parent && moveConfig.mode == 'timeline'"
+        class="sign"
+        @click="moveConfig.onMove({ goal: model, direction: 'left' })"
+        >[←]</span
+      >
+      <span
+        v-if="selected && container?.length && moveConfig.mode == 'tree'"
+        class="sign"
+        @click="moveUp"
+        >[↑]</span
+      >
+      <span
+        v-if="selected && container?.length && moveConfig.mode == 'tree'"
+        class="sign"
+        @click="levelDown"
+        >[→]</span
+      >
+      <span
+        v-if="selected && moveConfig.mode == 'timeline'"
+        class="sign"
+        @click="moveConfig.onMove({ goal: model, direction: 'right' })"
+        >[→]</span
+      >
       <span v-if="!isFolder && selected" class="sign" @click="openDeleteConfirmation">[x]</span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
       <TreeItem
         class="item"
-        v-for="(model, index) in model.children"
-        :model="model"
+        v-for="(child, index) in model.children"
+        :model="child"
         :collapsed="props.collapsed"
         @create="addChild"
         @delete="deleteChild"
-        v-bind:key="model.id"
+        :key="child.id"
         :container="index ? props.model.children : null"
         @levelUp="levelChildUp"
+        :moveConfig="moveConfig"
+        :parent="props.model"
       >
       </TreeItem>
     </ul>

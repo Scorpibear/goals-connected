@@ -19,6 +19,37 @@ const goalsList = ref(props.initGoals)
 
 const categories = ['развитие', 'творчество', 'влияние', 'семья', 'хобби']
 
+const getSectionLastDate = (section) => new Date(Date.parse(section.end) - 1).toISOString()
+
+function onMove(goal, direction, sectionIndex) {
+  switch (direction) {
+    case 'right':
+      if (sectionIndex < goalsList.value.length - 1) {
+        let sourceSection = goalsList.value[sectionIndex]
+        let goalIndex = sourceSection.goals.findIndex(({ id }) => id == goal.id)
+        sourceSection.goals.splice(goalIndex, 1)
+        let targetSection = goalsList.value[sectionIndex + 1]
+        goal.targetDate = getSectionLastDate(targetSection)
+        targetSection.goals.push(goal)
+        props.backend.updateGoal(goal)
+      }
+      break
+    case 'left':
+      if (sectionIndex > 0) {
+        let sourceSection = goalsList.value[sectionIndex]
+        let goalIndex = sourceSection.goals.findIndex(({ id }) => id == goal.id)
+        sourceSection.goals.splice(goalIndex, 1)
+        let targetSection = goalsList.value[sectionIndex - 1]
+        goal.targetDate = getSectionLastDate(targetSection)
+        targetSection.goals.push(goal)
+        props.backend.updateGoal(goal)
+      }
+      break
+    default:
+      console.error('Unsupported direction: ', direction)
+  }
+}
+
 onMounted(async () => {
   try {
     goalsList.value = await props.backend.getTimeline()
@@ -39,9 +70,14 @@ onMounted(async () => {
     </tr>
     <tr v-for="category in categories" :key="category">
       <td class="category">{{ category }}</td>
-      <td class="goals" v-for="section in goalsList" :key="section.id">
+      <td class="goals" v-for="(section, sectionIndex) in goalsList" :key="section.id">
         <GoalsTree
           :initGoals="section.goals.filter((goal) => goal.tags?.includes(category))"
+          :key="section.goals.length"
+          :moveConfig="{
+            mode: 'timeline',
+            onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
+          }"
         ></GoalsTree>
       </td>
     </tr>
@@ -52,6 +88,11 @@ onMounted(async () => {
           :initGoals="
             section.goals.filter((goal) => !goal.tags?.some((tag) => categories.includes(tag)))
           "
+          :key="section.goals.length"
+          :moveConfig="{
+            mode: 'timeline',
+            onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
+          }"
         ></GoalsTree>
       </td>
     </tr>

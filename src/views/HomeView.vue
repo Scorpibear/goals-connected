@@ -6,5 +6,5 @@ const backend = GoalsBackend.getDefaultInstance()
 </script>
 
 <template>
-  <GoalsTree :backend :collapsed="false" />
+  <GoalsTree :backend :collapsed="false" :moveConfig="{ mode: 'tree' }" />
 </template>
