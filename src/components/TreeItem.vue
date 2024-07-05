@@ -18,7 +18,10 @@ const props = defineProps({
     type: Array,
     default: null
   },
-  moveConfig: Object,
+  moveConfig: {
+    type: Object,
+    default: () => ({ mode: 'none' })
+  },
   parent: Object
 })
 

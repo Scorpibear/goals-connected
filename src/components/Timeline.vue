@@ -15,34 +15,36 @@ const props = defineProps({
   backend: Object
 })
 
+const focusedCell = ref(undefined)
+
 const goalsList = ref(props.initGoals)
 
 const categories = ['развитие', 'творчество', 'влияние', 'семья', 'хобби']
+const hints = ['9:00 - 11:00', '10:00 - 12:00', '11:00 - 19:00', '18:00 - 22:00', '21:00 - 0:00']
 
-const getSectionLastDate = (section) => new Date(Date.parse(section.end) - 1).toISOString()
+const getSectionLastDate = (section) =>
+  new Date(Date.parse(section.end) - 1).toISOString().split('T')[0]
+
+function doMove(container, goal, fromIndex, toIndex) {
+  let sourceSection = container[fromIndex]
+  let goalIndex = sourceSection.goals.findIndex(({ id }) => id == goal.id)
+  sourceSection.goals.splice(goalIndex, 1)
+  let targetSection = container[toIndex]
+  goal.targetDate = getSectionLastDate(targetSection)
+  targetSection.goals.push(goal)
+  props.backend.updateGoal(goal)
+}
 
 function onMove(goal, direction, sectionIndex) {
   switch (direction) {
     case 'right':
       if (sectionIndex < goalsList.value.length - 1) {
-        let sourceSection = goalsList.value[sectionIndex]
-        let goalIndex = sourceSection.goals.findIndex(({ id }) => id == goal.id)
-        sourceSection.goals.splice(goalIndex, 1)
-        let targetSection = goalsList.value[sectionIndex + 1]
-        goal.targetDate = getSectionLastDate(targetSection)
-        targetSection.goals.push(goal)
-        props.backend.updateGoal(goal)
+        doMove(goalsList.value, goal, sectionIndex, sectionIndex + 1)
       }
       break
     case 'left':
       if (sectionIndex > 0) {
-        let sourceSection = goalsList.value[sectionIndex]
-        let goalIndex = sourceSection.goals.findIndex(({ id }) => id == goal.id)
-        sourceSection.goals.splice(goalIndex, 1)
-        let targetSection = goalsList.value[sectionIndex - 1]
-        goal.targetDate = getSectionLastDate(targetSection)
-        targetSection.goals.push(goal)
-        props.backend.updateGoal(goal)
+        doMove(goalsList.value, goal, sectionIndex, sectionIndex - 1)
       }
       break
     default:
@@ -68,9 +70,20 @@ onMounted(async () => {
         {{ section.title }}
       </th>
     </tr>
-    <tr v-for="category in categories" :key="category">
-      <td class="category">{{ category }}</td>
-      <td class="goals" v-for="(section, sectionIndex) in goalsList" :key="section.id">
+    <tr v-for="(category, catIndex) in categories" :key="category">
+      <td class="category">
+        {{ category }}<br /><span class="hint">{{ hints[catIndex] }}</span>
+      </td>
+      <td
+        class="goals"
+        v-for="(section, sectionIndex) in goalsList"
+        :key="section.id"
+        :class="focusedCell == section.title + category ? 'focused' : ''"
+        @dblclick="
+          focusedCell =
+            focusedCell == section.title + category ? 'undefined' : section.title + category
+        "
+      >
         <GoalsTree
           :initGoals="section.goals.filter((goal) => goal.tags?.includes(category))"
           :key="section.goals.length"
@@ -124,5 +137,13 @@ td {
 }
 ul {
   padding-inline-start: 5px;
+}
+
+.hint {
+  font-size: smaller;
+}
+
+.focused {
+  background-color: aquamarine;
 }
 </style>
