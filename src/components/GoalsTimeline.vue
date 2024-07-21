@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import GoalsTree from './GoalsTree.vue'
+import AddGoalFromTimeline from './AddGoalFromTimeline.vue'
 
 const props = defineProps({
   initGoals: {
@@ -22,8 +23,11 @@ const goalsList = ref(props.initGoals)
 const categories = ['развитие', 'творчество', 'влияние', 'семья', 'хобби']
 const hints = ['9:00 - 11:00', '10:00 - 12:00', '11:00 - 19:00', '18:00 - 22:00', '21:00 - 0:00']
 
-const getSectionLastDate = (section) =>
-  new Date(Date.parse(section.end) - 1).toISOString().split('T')[0]
+const getSectionLastDate = (section) => {
+  console.debug('Getting last date for section:', section)
+  const date = new Date((Date.parse(section?.end) || Date.now()) - 1)
+  return date.toISOString().split('T')[0]
+}
 
 function doMove(container, goal, fromIndex, toIndex) {
   let sourceSection = container[fromIndex]
@@ -92,6 +96,12 @@ onMounted(async () => {
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
           }"
         ></GoalsTree>
+        <span class="space">&nbsp;</span>
+        <AddGoalFromTimeline
+          :baseGoalProps="{ tags: [category], targetDate: getSectionLastDate(section) }"
+        ></AddGoalFromTimeline
+        ><span class="space">&nbsp;</span>
+        <div class="space">&nbsp;</div>
       </td>
     </tr>
     <tr>

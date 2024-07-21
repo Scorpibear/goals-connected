@@ -1,10 +1,10 @@
 <script setup>
-import Timeline from '../components/Timeline.vue'
+import GoalsTimeline from '../components/GoalsTimeline.vue'
 import { GoalsBackend } from '@/services/goals-backend'
 
 const backend = GoalsBackend.getDefaultInstance()
 </script>
 
 <template>
-  <Timeline :backend />
+  <GoalsTimeline :backend />
 </template>
