@@ -91,11 +91,22 @@ export class GoalsBackend {
     return this.patch(id, 'levelDown')
   }
 
-  async patch(id, action) {
+  async complete(id, value) {
+    return this.patch(id, 'complete', { value })
+  }
+
+  async patch(id, action, params) {
     try {
       console.debug(`${action} goal with id = '${id}'`)
       const apiPath = '/goal'
-      const url = `${this.apiPath2url(apiPath)}&id=${id}&action=${action}`
+      let url = `${this.apiPath2url(apiPath)}&id=${id}&action=${action}`
+      if (params) {
+        for (const key in params) {
+          if (Object.prototype.hasOwnProperty.apply(params, [key])) {
+            url += `&${key}=${params[key]}`
+          }
+        }
+      }
 
       const response = await fetch(url, { method: 'PATCH' })
       return response.text()

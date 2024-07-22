@@ -64,6 +64,11 @@ onMounted(async () => {
     // TODO: load from localstorage
   }
 })
+
+function highlight(section, category) {
+  focusedCell.value =
+    focusedCell.value == section.title + category ? 'undefined' : section.title + category
+}
 </script>
 
 <template>
@@ -83,10 +88,6 @@ onMounted(async () => {
         v-for="(section, sectionIndex) in goalsList"
         :key="section.id"
         :class="focusedCell == section.title + category ? 'focused' : ''"
-        @dblclick="
-          focusedCell =
-            focusedCell == section.title + category ? 'undefined' : section.title + category
-        "
       >
         <GoalsTree
           :initGoals="section.goals.filter((goal) => goal.tags?.includes(category))"

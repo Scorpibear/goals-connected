@@ -6,11 +6,14 @@ const fetchResultStub = Promise.resolve(response)
 
 /*global global*/
 describe('goals-backend', () => {
+  let backend
+  beforeEach(() => {
+    backend = new GoalsBackend()
+  })
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
   describe('create', () => {
-    let backend
-    beforeEach(() => {
-      backend = new GoalsBackend()
-    })
     it('executes POST /goal request', () => {
       vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
       let goalData = { title: 'new title', id: 'id2', parentId: 'id1' }
@@ -30,14 +33,10 @@ describe('goals-backend', () => {
 
       expect(output).toEqual({ id: 'server-provided', title: 'goal1' })
     })
-    afterEach(() => {
-      vi.resetAllMocks()
-    })
   })
   describe('getActGoals', () => {
     it('fetch is used', () => {
       vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
-      let backend = new GoalsBackend()
       backend.getActGoals()
       expect(global.fetch).toHaveBeenCalled()
     })
@@ -54,11 +53,22 @@ describe('goals-backend', () => {
   })
 
   describe('moveUp', () => {
-    it('calls PATCH /goal with action:moveUp', () => {
-      let backend = new GoalsBackend()
-      backend.moveUp('id-12')
+    it('calls PATCH /goal with action:moveUp', async () => {
+      await backend.moveUp('id-12')
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringMatching(/\/goal\?(.*)id=id-12&action=moveUp/),
+        { method: 'PATCH' }
+      )
+    })
+  })
+  describe('complete', () => {
+    it('calls PATCH /goal with action:complete', async () => {
+      vi.spyOn(global, 'fetch').mockResolvedValue(fetchResultStub)
+
+      await backend.complete('id-12', true)
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/goal\?(.*)id=id-12&action=complete&value=true/),
         { method: 'PATCH' }
       )
     })
