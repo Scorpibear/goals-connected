@@ -20,8 +20,13 @@ const focusedCell = ref(undefined)
 
 const goalsList = ref(props.initGoals)
 
-const categories = ['развитие', 'творчество', 'влияние', 'семья', 'хобби']
-const hints = ['9:00 - 11:00', '10:00 - 12:00', '11:00 - 19:00', '18:00 - 22:00', '21:00 - 0:00']
+const categoriesData = [
+  { title: 'влияние', hint: '11:00 - 19:00' },
+  { title: 'семья', hint: '18:00 - 22:00' },
+  { title: 'хобби', hint: '21:00 - 0:00' },
+  { title: 'развитие', hint: '9:00 - 11:00' },
+  { title: 'творчество', hint: '10:00 - 12:00' }
+]
 
 const getSectionLastDate = (section) => {
   console.debug('Getting last date for section:', section)
@@ -79,18 +84,18 @@ function highlight(section, category) {
         {{ section.title }}
       </th>
     </tr>
-    <tr v-for="(category, catIndex) in categories" :key="category">
+    <tr v-for="category in categoriesData" :key="category.title">
       <td class="category">
-        {{ category }}<br /><span class="hint">{{ hints[catIndex] }}</span>
+        {{ category.title }}<br /><span class="hint">{{ category.hint }}</span>
       </td>
       <td
         class="goals"
         v-for="(section, sectionIndex) in goalsList"
         :key="section.id"
-        :class="focusedCell == section.title + category ? 'focused' : ''"
+        :class="focusedCell == section.title + category.title ? 'focused' : ''"
       >
         <GoalsTree
-          :initGoals="section.goals.filter((goal) => goal.tags?.includes(category))"
+          :initGoals="section.goals.filter((goal) => goal.tags?.includes(category.title))"
           :key="section.goals.length"
           :moveConfig="{
             mode: 'timeline',
@@ -99,7 +104,7 @@ function highlight(section, category) {
         ></GoalsTree>
         <span class="space">&nbsp;</span>
         <AddGoalFromTimeline
-          :baseGoalProps="{ tags: [category], targetDate: getSectionLastDate(section) }"
+          :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
         ></AddGoalFromTimeline
         ><span class="space">&nbsp;</span>
         <div class="space">&nbsp;</div>
@@ -110,7 +115,9 @@ function highlight(section, category) {
       <td class="goals" v-for="section in goalsList" :key="section.id">
         <GoalsTree
           :initGoals="
-            section.goals.filter((goal) => !goal.tags?.some((tag) => categories.includes(tag)))
+            section.goals.filter(
+              (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
+            )
           "
           :key="section.goals.length"
           :moveConfig="{
