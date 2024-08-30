@@ -14,7 +14,7 @@ module.exports = {
       extends: ['plugin:cypress/recommended']
     },
     {
-      files: ['**/*.spec.js', '**/*.spec.jsx'],
+      files: ['**/*.spec.js', '**/*.spec.jsx', '**/test.js'],
       env: {
         jest: true
       }

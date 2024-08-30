@@ -1,15 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { GoalsBackend } from '../services/goals-backend'
 import { formatDate } from '../services/date-utils'
 import EditGoal from './EditGoal.vue'
 
 const props = defineProps({
   model: Object,
-  backend: {
-    type: Object,
-    default: GoalsBackend.getDefaultInstance()
-  },
+  backend: Object,
   collapsed: {
     type: Boolean,
     default: true
@@ -178,54 +174,29 @@ function complete() {
 <template>
   <li>
     <div :class="{ bold: isFolder }" @mouseenter="selected = true" @mouseleave="selected = false">
-      <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span
-      ><span v-else class="sign" @dblclick="startEdit">&nbsp;-&nbsp;</span
-      ><span v-if="!editMode" @dblclick="startEdit" :class="{ completed: props.model.completed }"
-        >{{ model.title
+      <span v-if="isFolder" class="sign" @click="toggle">[{{ isOpen ? '-' : '+' }}]</span><span v-else class="sign"
+        @dblclick="startEdit">&nbsp;-&nbsp;</span><span v-if="!editMode" @dblclick="startEdit"
+        :class="{ completed: props.model.completed }">{{ model.title
         }}<span v-if="model.targetDate && selected">
-          к {{ formatDate(model.targetDate) }}</span
-        ></span
-      ><EditGoal v-else :model @doneEdit="doneEdit" /><span
-        v-if="!isFolder && selected"
-        class="sign"
-        @dblclick="changeType"
-        >[+]</span
-      ><span v-if="selected" class="sign area">
+          к {{ formatDate(model.targetDate) }}</span></span>
+      <EditGoal v-else :model @doneEdit="doneEdit" /><span v-if="!isFolder && selected" class="sign"
+        @dblclick="changeType">[+]</span><span v-if="selected" class="sign area">
         <span v-if="isFolder" @dblclick="startCreation">[+]</span>
         <span v-if="props.parent" @click="levelUp">[←]</span>
-        <span
-          v-if="!props.parent && moveConfig.mode == 'timeline'"
-          @click="moveConfig.onMove({ goal: model, direction: 'left' })"
-          >[←]</span
-        >
+        <span v-if="!props.parent && moveConfig.mode == 'timeline'"
+          @click="moveConfig.onMove({ goal: model, direction: 'left' })">[←]</span>
         <span v-if="container?.length && moveConfig.mode == 'tree'" @click="moveUp">[↑]</span>
-        <span v-if="container?.length && moveConfig.mode == 'tree'" class="sign" @click="levelDown"
-          >[→]</span
-        >
-        <span
-          v-if="moveConfig.mode == 'timeline'"
-          class="sign"
-          @click="moveConfig.onMove({ goal: model, direction: 'right' })"
-          >[→]</span
-        >
+        <span v-if="container?.length && moveConfig.mode == 'tree'" class="sign" @click="levelDown">[→]</span>
+        <span v-if="moveConfig.mode == 'timeline'" class="sign"
+          @click="moveConfig.onMove({ goal: model, direction: 'right' })">[→]</span>
         <span @click="complete">[✓]</span>
         <span v-if="!isFolder" @click="openDeleteConfirmation">[x]</span>
       </span>
     </div>
     <ul v-show="isOpen" v-if="isFolder">
-      <TreeItem
-        class="item"
-        v-for="(child, index) in model.children"
-        :model="child"
-        :collapsed="props.collapsed"
-        @create="addChild"
-        @delete="deleteChild"
-        :key="child.id"
-        :container="index ? props.model.children : null"
-        @levelUp="levelChildUp"
-        :moveConfig="moveConfig"
-        :parent="props.model"
-      >
+      <TreeItem class="item" v-for="(child, index) in model.children" :model="child" :collapsed="props.collapsed"
+        @create="addChild" @delete="deleteChild" :key="child.id" :container="index ? props.model.children : null"
+        @levelUp="levelChildUp" :moveConfig="moveConfig" :parent="props.model" :backend="props.backend">
       </TreeItem>
     </ul>
   </li>
@@ -235,9 +206,11 @@ function complete() {
 .sign {
   font-family: monospace;
 }
+
 label {
   cursor: pointer;
 }
+
 .completed {
   text-decoration: line-through;
 }

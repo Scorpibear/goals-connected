@@ -6,6 +6,14 @@ const fetchResultStub = Promise.resolve(response)
 
 /*global global*/
 describe('goals-backend', () => {
+  describe('constructor', () => {
+    it('loads userId from localStorage', () => {
+      localStorage.setItem('userId', 'userId')
+      const instance = new GoalsBackend()
+      console.debug(instance)
+      expect(instance.userId).toBe('userId')
+    })
+  })
   let backend
   beforeEach(() => {
     backend = new GoalsBackend()
@@ -48,8 +56,15 @@ describe('goals-backend', () => {
     it('is not null', () => {
       expect(GoalsBackend.getDefaultInstance()).toBeDefined()
     })
-    it('returns each type the same instance')
-    it('is a GoalsBackend class instance')
+    it('returns each time the same instance', () => {
+      const instance1 = GoalsBackend.getDefaultInstance()
+      const instance2 = GoalsBackend.getDefaultInstance()
+      expect(instance1).toBe(instance2)
+    })
+    it('is a GoalsBackend class instance', () => {
+      const instance = GoalsBackend.getDefaultInstance()
+      expect(instance.constructor.name).toBe('GoalsBackend')
+    })
   })
 
   describe('moveUp', () => {

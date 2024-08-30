@@ -1,8 +1,8 @@
 <script setup>
 import ActGoals from '../components/ActGoals.vue'
-import { GoalsBackend } from '@/services/goals-backend'
+import BackendSelector from '@/services/backend-selector'
 
-const backend = GoalsBackend.getDefaultInstance()
+const backend = BackendSelector.getBackend()
 </script>
 
 <template>

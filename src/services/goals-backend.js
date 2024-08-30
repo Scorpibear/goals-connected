@@ -1,9 +1,12 @@
 export class GoalsBackend {
-  constructor(endpoint, key) {
-    this.endpoint = endpoint || 'https://goalsconnected.azurewebsites.net/api'
-    this.key = key || 'cYt1GnWRW1KjJY7eW6-jzOqk-Mctdd-cUWNavGoN9RvHAzFuGD4Tkw=='
-    this.userId = '01909323-28a0-7cdc-8d15-8124ed2fd048' // my
-    //this.userId = '01909322-0bff-72ed-a522-632d025e53df' // example;
+  constructor(endpoint, key, userId) {
+    this.endpoint =
+      endpoint || localStorage.getItem('endpoint') || 'https://goalsconnected.azurewebsites.net/api'
+    this.key =
+      key ||
+      localStorage.getItem('key') ||
+      'cYt1GnWRW1KjJY7eW6-jzOqk-Mctdd-cUWNavGoN9RvHAzFuGD4Tkw=='
+    this.userId = userId || localStorage.getItem('userId') || '01909322-0bff-72ed-a522-632d025e53df' // example;
   }
 
   async create(goalData) {

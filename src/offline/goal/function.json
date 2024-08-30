@@ -1,0 +1,38 @@
+﻿{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post",
+        "delete",
+        "put",
+        "patch"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "goals",
+      "direction": "in",
+      "type": "blob",
+      "path": "gc-users/{query.userId}/goals.json",
+      "methods": [],
+      "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outGoals",
+      "direction": "out",
+      "type": "blob",
+      "path": "gc-users/{query.userId}/goals.json",
+      "methods": [],
+      "connection": "AzureWebJobsStorage"
+    }
+  ]
+}

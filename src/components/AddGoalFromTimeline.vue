@@ -1,13 +1,13 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 import EditGoal from './EditGoal.vue'
-import { GoalsBackend } from '@/services/goals-backend'
+import BackendSelector from '@/services/backend-selector'
 
 const props = defineProps({
   baseGoalProps: Object,
   backend: {
     type: Object,
-    default: GoalsBackend.getDefaultInstance()
+    default: BackendSelector.getBackend()
   }
 })
 

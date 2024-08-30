@@ -21,11 +21,11 @@ const focusedCell = ref(undefined)
 const goalsList = ref(props.initGoals)
 
 const categoriesData = [
-  { title: 'влияние', hint: '11:00 - 19:00' },
-  { title: 'семья', hint: '18:00 - 22:00' },
-  { title: 'хобби', hint: '21:00 - 0:00' },
-  { title: 'развитие', hint: '9:00 - 11:00' },
-  { title: 'творчество', hint: '10:00 - 12:00' }
+  { title: 'семья', hint: '19:00 - 22:00' },
+  { title: 'влияние', hint: '11:00 - 20:00' },
+  { title: 'творчество', hint: '10:00 - 12:00' },
+  { title: 'развитие', hint: '8:30 - 10:30, 21:00 - 23:00' },
+  { title: 'хобби', hint: '22:00 - 0:00' }
 ]
 
 const getSectionLastDate = (section) => {
@@ -70,10 +70,6 @@ onMounted(async () => {
   }
 })
 
-function highlight(section, category) {
-  focusedCell.value =
-    focusedCell.value == section.title + category ? 'undefined' : section.title + category
-}
 </script>
 
 <template>
@@ -88,43 +84,29 @@ function highlight(section, category) {
       <td class="category">
         {{ category.title }}<br /><span class="hint">{{ category.hint }}</span>
       </td>
-      <td
-        class="goals"
-        v-for="(section, sectionIndex) in goalsList"
-        :key="section.id"
-        :class="focusedCell == section.title + category.title ? 'focused' : ''"
-      >
-        <GoalsTree
-          :initGoals="section.goals.filter((goal) => goal.tags?.includes(category.title))"
-          :key="section.goals.length"
-          :moveConfig="{
+      <td class="goals" v-for="(section, sectionIndex) in goalsList" :key="section.id"
+        :class="focusedCell == section.title + category.title ? 'focused' : ''">
+        <GoalsTree :initGoals="section.goals.filter((goal) => goal.tags?.includes(category.title))"
+          :key="section.goals.length" :moveConfig="{
             mode: 'timeline',
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }"
-        ></GoalsTree>
+          }"></GoalsTree>
         <span class="space">&nbsp;</span>
-        <AddGoalFromTimeline
-          :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
-        ></AddGoalFromTimeline
-        ><span class="space">&nbsp;</span>
+        <AddGoalFromTimeline :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }">
+        </AddGoalFromTimeline><span class="space">&nbsp;</span>
         <div class="space">&nbsp;</div>
       </td>
     </tr>
     <tr>
       <td class="category"></td>
       <td class="goals" v-for="section in goalsList" :key="section.id">
-        <GoalsTree
-          :initGoals="
-            section.goals.filter(
-              (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
-            )
-          "
-          :key="section.goals.length"
-          :moveConfig="{
+        <GoalsTree :initGoals="section.goals.filter(
+          (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
+        )
+          " :key="section.goals.length" :moveConfig="{
             mode: 'timeline',
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }"
-        ></GoalsTree>
+          }"></GoalsTree>
       </td>
     </tr>
   </table>
@@ -134,12 +116,14 @@ function highlight(section, category) {
 td {
   vertical-align: top;
 }
+
 @media (min-width: 1024px) {
   td.goals {
     min-width: 270px;
     font-size: small;
   }
 }
+
 .category {
   align-content: center;
   text-align: center;
@@ -153,6 +137,7 @@ td {
   border: 1px solid black;
   border-collapse: collapse;
 }
+
 ul {
   padding-inline-start: 5px;
 }
