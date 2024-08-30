@@ -1,6 +1,6 @@
 <script setup>
 import ResultGoals from '../components/ResultGoals.vue'
-import BackendSelector from '@/services/backend-selector'
+import BackendSelector from '@/services/backend/backend-selector'
 
 const backend = BackendSelector.getBackend()
 </script>

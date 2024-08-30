@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import EditGoal from './EditGoal.vue'
-import BackendSelector from '@/services/backend-selector'
+import BackendSelector from '@/services/backend/backend-selector'
 
 const props = defineProps({
   baseGoalProps: Object,

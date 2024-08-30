@@ -1,6 +1,6 @@
 // services/backend-selector.js
-import { GoalsBackend } from './goals-backend'
-import { OfflineBackend } from '../offline/offline-backend'
+import { OnlineBackend } from './online-backend'
+import { OfflineBackend } from './offline-backend'
 
 export default class BackendSelector {
   static get isOfflineMode() {
@@ -15,7 +15,7 @@ export default class BackendSelector {
     if (BackendSelector.isOfflineMode) {
       return OfflineBackend.getDefaultInstance()
     } else {
-      return GoalsBackend.getDefaultInstance()
+      return OnlineBackend.getDefaultInstance()
     }
   }
 }

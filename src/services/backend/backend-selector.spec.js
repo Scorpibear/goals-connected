@@ -36,7 +36,7 @@ describe('BackendSelector', () => {
       localStorage.setItem('userId', 'user123')
 
       const backend = BackendSelector.getBackend()
-      expect(backend.constructor.name).toBe('GoalsBackend')
+      expect(backend.constructor.name).toBe('OnlineBackend')
     })
 
     it('returns offline backend if offline mode is off and userId is absent', () => {
