@@ -2,10 +2,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { formatDate } from '../services/date-utils'
 import EditGoal from './EditGoal.vue'
+import BackendSelector from '@/services/backend/backend-selector';
 
 const props = defineProps({
   model: Object,
-  backend: Object,
+  backend: {
+    type: Object,
+    default: BackendSelector.getBackend()
+  },
   collapsed: {
     type: Boolean,
     default: true
