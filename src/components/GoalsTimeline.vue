@@ -63,10 +63,13 @@ function onMove(goal, direction, sectionIndex) {
 
 onMounted(async () => {
   try {
-    goalsList.value = await props.backend.getTimeline()
-    goalsList.value.forEach((section) => (section.id = Math.random()))
+    if (props.backend?.getTimeline) {
+      goalsList.value = await props.backend.getTimeline()
+    } else {
+      console.warn('Backend does not support getTimeline method: ' + props.backend?.constructor.name)
+    }
+    goalsList.value?.forEach((section) => (section.id = Math.random()))
   } finally {
-    // TODO: load from localstorage
   }
 })
 
@@ -90,10 +93,11 @@ onMounted(async () => {
           :key="section.goals.length" :moveConfig="{
             mode: 'timeline',
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }" :backend></GoalsTree>
+          }"></GoalsTree>
         <span class="space">&nbsp;</span>
-        <AddGoalFromTimeline :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }">
-        </AddGoalFromTimeline><span class="space">&nbsp;</span>
+        <AddGoalFromTimeline :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
+          @create="goal => section.goals.push(goal)" />
+        <span class="space">&nbsp;</span>
         <div class="space">&nbsp;</div>
       </td>
     </tr>
@@ -106,7 +110,7 @@ onMounted(async () => {
           " :key="section.goals.length" :moveConfig="{
             mode: 'timeline',
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }" :backend></GoalsTree>
+          }"></GoalsTree>
       </td>
     </tr>
   </table>

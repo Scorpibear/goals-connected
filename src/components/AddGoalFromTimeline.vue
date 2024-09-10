@@ -30,7 +30,7 @@ function startEdit() {
 function doneEdit(newGoalData) {
   if (newGoalData) {
     emit('create', newGoalData)
-    props.backend.create(newGoalData)
+    props.backend.create(newGoalData).then(createdData => newGoalData.id = createdData.id);
   }
   editMode.value = false
 }

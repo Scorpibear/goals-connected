@@ -1,7 +1,6 @@
-import { OfflineBackend } from './offline-backend'
-import { vi } from 'vitest'
+import FetchLocal from './fetch-local'
 
-describe('OfflineBackend', () => {
+describe('fetchLocal', () => {
   const goalsData = {
     goals: [
       {
@@ -51,37 +50,9 @@ describe('OfflineBackend', () => {
       }
     ]
   }
-  let getItemSpy
-  let setItemSpy
-  let removeItemSpy
-
-  beforeEach(() => {
-    getItemSpy = vi.spyOn(localStorage, 'getItem')
-    setItemSpy = vi.spyOn(localStorage, 'setItem')
-    removeItemSpy = vi.spyOn(localStorage, 'removeItem')
-  })
-
-  afterEach(() => {
-    getItemSpy.mockRestore()
-    setItemSpy.mockRestore()
-    removeItemSpy.mockRestore()
-  })
-
-  describe('defaultInstance', () => {
-    it('returns the same instance', () => {
-      const instance1 = OfflineBackend.getDefaultInstance()
-      const instance2 = OfflineBackend.getDefaultInstance()
-      expect(instance1).toBe(instance2)
-    })
-  })
-  describe('getTimeline', () => {
-    it('returns the timeline', () => {
-      let backend = new OfflineBackend({ goalsData })
-      const timeline = backend.getTimeline()
-      expect('length' in timeline).toBeTruthy()
-    })
-    afterEach(() => {
-      vi.clearAllMocks()
-    })
+  it('resolves with local data', async () => {
+    const fetch = FetchLocal.create({ base: '../../offline/', goalsData })
+    const output = await fetch('../../offline/goal')
+    expect(output).toEqual(goalsData.goals)
   })
 })

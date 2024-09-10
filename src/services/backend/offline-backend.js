@@ -1,18 +1,25 @@
-import getTimeline from '@/services/offline/timeline/index'
+import FetchLocal from './fetch-local'
 import { GoalsBackend } from './goals-backend'
 
 export class OfflineBackend extends GoalsBackend {
-  goalsKey = 'gc-goals'
+  goalsDataKey = 'gc-goals-data'
   static defaultInstance = null
+
+  constructor({ goalsData } = {}) {
+    super()
+    goalsData ||= this.goalsData
+    this.fetch = FetchLocal.create({ base: '../../offline/', goalsData })
+  }
+
   static getDefaultInstance() {
     return (OfflineBackend.defaultInstance ||= new OfflineBackend())
   }
 
-  getTimeline() {
-    const context = {}
-    const req = {}
-    const goals = localStorage.getItem(this.goalsKey) || []
-    getTimeline(context, req, goals)
-    return JSON.parse(context.res.body)
+  get goalsData() {
+    try {
+      return JSON.parse(localStorage.getItem(this.goalsDataKey))
+    } catch {
+      return {}
+    }
   }
 }

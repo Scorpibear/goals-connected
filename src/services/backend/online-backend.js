@@ -10,6 +10,7 @@ export class OnlineBackend extends GoalsBackend {
       localStorage.getItem('key') ||
       'cYt1GnWRW1KjJY7eW6-jzOqk-Mctdd-cUWNavGoN9RvHAzFuGD4Tkw=='
     this.userId = userId || localStorage.getItem('userId') || '01909322-0bff-72ed-a522-632d025e53df' // example;
+    this.fetch = window.fetch.bind(window)
   }
 
   static getDefaultInstance() {
