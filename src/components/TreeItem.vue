@@ -55,7 +55,7 @@ function startCreation() {
     id: newGoalId,
     title: newGoalTitle,
     tags: props.model.tags,
-    type: props.model.type == 2 ? 2 : undefined
+    type: props.model.type == 2 ? 2 : props.model.type == 1 ? 1 : undefined
   })
 }
 
