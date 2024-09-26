@@ -88,42 +88,46 @@ onMounted(async () => {
 
 <template>
   <table>
-    <tr>
-      <th class="category"></th>
-      <th v-for="section in goalsList" :key="section.title">
-        {{ section.title }}
-      </th>
-    </tr>
-    <tr v-for="category in categoriesData" :key="category.title">
-      <td class="category">
-        {{ category.title }}<br /><span class="hint">{{ category.hint }}</span>
-      </td>
-      <td class="goals" v-for="(section, sectionIndex) in goalsList" :key="section.id"
-        :class="focusedCell == section.title + category.title ? 'focused' : ''">
-        <GoalsTree :initGoals="section.goals.filter((goal) => goal.tags?.includes(category.title))"
-          :key="section.goals.length" :moveConfig="{
+    <thead>
+      <tr>
+        <th class="category"></th>
+        <th v-for="section in goalsList" :key="section.title">
+          {{ section.title }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="category in categoriesData" :key="category.title">
+        <td class="category">
+          {{ category.title }}<br /><span class="hint">{{ category.hint }}</span>
+        </td>
+        <td class="goals" v-for="(section, sectionIndex) in goalsList" :key="section.id"
+          :class="focusedCell == section.title + category.title ? 'focused' : ''">
+          <GoalsTree :initGoals="section.goals.filter((goal) => goal.tags?.includes(category.title))"
+            :key="section.goals.length" :moveConfig="{
+              mode: 'timeline',
+              onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
+            }"></GoalsTree>
+          <span class="space">&nbsp;</span>
+          <AddGoalFromTimeline :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
+            @create="goal => section.goals.push(goal)" />
+          <span class="space">&nbsp;</span>
+          <div class="space">&nbsp;</div>
+        </td>
+      </tr>
+      <tr>
+        <td class="category"></td>
+        <td class="goals" v-for="section in goalsList" :key="section.id">
+          <GoalsTree :initGoals="section.goals.filter(
+            (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
+          )
+            " :key="section.goals.length" :moveConfig="{
             mode: 'timeline',
             onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
           }"></GoalsTree>
-        <span class="space">&nbsp;</span>
-        <AddGoalFromTimeline :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
-          @create="goal => section.goals.push(goal)" />
-        <span class="space">&nbsp;</span>
-        <div class="space">&nbsp;</div>
-      </td>
-    </tr>
-    <tr>
-      <td class="category"></td>
-      <td class="goals" v-for="section in goalsList" :key="section.id">
-        <GoalsTree :initGoals="section.goals.filter(
-          (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
-        )
-          " :key="section.goals.length" :moveConfig="{
-            mode: 'timeline',
-            onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }"></GoalsTree>
-      </td>
-    </tr>
+        </td>
+      </tr>
+    </tbody>
   </table>
 </template>
 
