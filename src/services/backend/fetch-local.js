@@ -5,7 +5,8 @@ export default {
     const funcMap = {}
     const getFuncByPath = (url) => {
       if (!funcMap[url]) {
-        const fullPath = path.join(base, url)
+        const fullPath = path.join(base, url, 'index.js')
+        console.debug('fullPath: ' + fullPath)
         funcMap[url] = require(fullPath)
       }
       return funcMap[url]

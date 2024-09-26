@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import GoalsTree from './GoalsTree.vue'
 import AddGoalFromTimeline from './AddGoalFromTimeline.vue'
+import CategoriesData from '../services/categories'
 
 const props = defineProps({
   initGoals: {
@@ -20,13 +21,23 @@ const focusedCell = ref(undefined)
 
 const goalsList = ref(props.initGoals)
 
+const categoriesData = CategoriesData;
+
+/*
 const categoriesData = [
   { title: 'семья', hint: '19:00 - 22:00' },
   { title: 'влияние', hint: '11:00 - 20:00' },
   { title: 'творчество', hint: '10:00 - 12:00' },
   { title: 'развитие', hint: '8:30 - 10:30, 21:00 - 23:00' },
-  { title: 'хобби', hint: '22:00 - 0:00' }
-]
+  { title: 'хобби', hint: '22:00 - 0:00' },
+  { title: 'Путь Лидера' },
+  { title: 'Путь Отца', tags: ['семья'] },
+  { title: 'Путь Создателя Продуктов' },
+  { title: 'Путь SDET-архитектора' },
+  { title: 'Путь Блогера' },
+  { title: 'Путь Мастера Спорта' },
+  { title: 'Путь Полиглота' }
+]*/
 
 const getSectionLastDate = (section) => {
   console.debug('Getting last date for section:', section)

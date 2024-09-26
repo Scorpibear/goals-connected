@@ -49,6 +49,7 @@ export class GoalsBackend {
 
   async fetchGoals(apiPath) {
     try {
+      console.debug(`fetchGoals: apiPath = '${apiPath}'`)
       const url = this.apiPath2url(apiPath)
       let response = await this.fetch(url)
       let goalsData = await response.json()

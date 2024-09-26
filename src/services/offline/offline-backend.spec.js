@@ -78,6 +78,7 @@ describe('OfflineBackend', () => {
     it.only('returns the timeline', async () => {
       let backend = new OfflineBackend()
       const timeline = await backend.getTimeline()
+      expect(timeline).toBeDefined()
       console.debug('timeline', timeline)
       expect('length' in timeline).toBeTruthy()
     })
