@@ -8,7 +8,8 @@ export class OfflineBackend extends GoalsBackend {
   constructor({ goalsData } = {}) {
     super()
     goalsData ||= this.goalsData
-    this.fetch = FetchLocal.create({ base: '../../offline/', goalsData })
+    this.fetch = FetchLocal.create({ base: '@/src/offline', goalsData })
+    console.debug('OfflineBackend::fetch: ', this.fetch)
   }
 
   static getDefaultInstance() {
