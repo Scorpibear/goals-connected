@@ -3,6 +3,7 @@ import { vi } from 'vitest'
 
 const response = { json: () => Promise.resolve({}) }
 const fetchResultStub = Promise.resolve(response)
+const fetchMock = () => fetchResultStub
 
 describe('goals-backend', () => {
   describe('constructor', () => {
@@ -16,13 +17,14 @@ describe('goals-backend', () => {
   let backend
   beforeEach(() => {
     backend = new GoalsBackend()
+    backend.fetch = fetchMock
   })
   afterEach(() => {
     vi.resetAllMocks()
   })
   describe('create', () => {
     it('executes POST /goal request', () => {
-      vi.spyOn(backend, 'fetch').mockResolvedValue(fetchResultStub)
+      vi.spyOn(backend, 'fetch')
       let goalData = { title: 'new title', id: 'id2', parentId: 'id1' }
 
       backend.create(goalData)
@@ -33,7 +35,7 @@ describe('goals-backend', () => {
       })
     })
     it('provides json data as output', async () => {
-      vi.spyOn(backend, 'fetch').mockResolvedValue(fetchResultStub)
+      vi.spyOn(backend, 'fetch')
       vi.spyOn(response, 'json').mockResolvedValue({ id: 'server-provided', title: 'goal1' })
 
       const output = await backend.create({ id: 'local-id', title: 'goal1' })
@@ -43,7 +45,7 @@ describe('goals-backend', () => {
   })
   describe('getActGoals', () => {
     it('fetch is used', () => {
-      vi.spyOn(backend, 'fetch').mockResolvedValue(fetchResultStub)
+      vi.spyOn(backend, 'fetch')
       backend.getActGoals()
       expect(backend.fetch).toHaveBeenCalled()
     })
@@ -68,6 +70,7 @@ describe('goals-backend', () => {
 
   describe('moveUp', () => {
     it('calls PATCH /goal with action:moveUp', async () => {
+      vi.spyOn(backend, 'fetch')
       await backend.moveUp('id-12')
       expect(backend.fetch).toHaveBeenCalledWith(
         expect.stringMatching(/\/goal\?(.*)id=id-12&action=moveUp/),
@@ -77,7 +80,7 @@ describe('goals-backend', () => {
   })
   describe('complete', () => {
     it('calls PATCH /goal with action:complete', async () => {
-      vi.spyOn(backend, 'fetch').mockResolvedValue(fetchResultStub)
+      vi.spyOn(backend, 'fetch')
 
       await backend.complete('id-12', true)
 
