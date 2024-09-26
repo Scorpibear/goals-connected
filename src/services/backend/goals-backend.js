@@ -1,5 +1,12 @@
+export const USER_ID_KEY = 'userId'
+
 export class GoalsBackend {
   fetch
+  userId
+
+  constructor() {
+    this.userId = localStorage.getItem(USER_ID_KEY)
+  }
 
   async create(goalData) {
     try {
