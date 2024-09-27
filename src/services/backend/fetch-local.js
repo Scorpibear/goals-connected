@@ -1,4 +1,8 @@
-import path from 'path'
+import actgoals from '@/services/offline/actgoals/index'
+import goal from '@/services/offline/goal/index'
+import goals from '@/services/offline/goals/index'
+import resultgoals from '@/services/offline/resultgoals/index'
+import timeline from '@/services/offline/timeline/index'
 
 class Response {
   body
@@ -18,19 +22,20 @@ class Response {
 }
 
 export default {
-  create: ({ base, goalsData, onBindingsUpdate }) => {
-    const funcMap = {}
+  create: ({ goalsData, onBindingsUpdate }) => {
+    const funcMap = {
+      '/goal': goal,
+      '/actgoals': actgoals,
+      '/goals': goals,
+      '/resultgoals': resultgoals,
+      '/timeline': timeline
+    }
     const getFuncByPath = (url) => {
-      if (!funcMap[url]) {
-        const fullPath = path.join(base, url, 'index.js')
-        console.debug('fullPath: ' + fullPath)
-        funcMap[url] = import(fullPath)
-      }
-      return funcMap[url]
+      const base = url.split('?')[0]
+      return funcMap[base]
     }
     return async (url, req) => {
-      const urlObject = new URL(url, base)
-      const func = getFuncByPath(urlObject.path)
+      const func = getFuncByPath(url)
       const context = { res: {}, log: console.log, bindings: {} }
       console.debug('FetchLocal: url, req, goalsData, func: ', url, req, goalsData, func)
       func(context, req, goalsData)
