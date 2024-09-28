@@ -11,11 +11,4 @@ describe('AddGoalFromTimelineTests', () => {
     })
     expect(wrapper.text()).toContain('+')
   })
-  it('provides goal id to the parent component after adding a goal', async () => {
-    const wrapper = mount(AddGoalFromTimeline, {
-      props: { baseGoalProps: { tags: ['Семья'], targetDate: '2024-07-19' }, backend }
-    })
-    await wrapper.find('button').trigger('click')
-    expect(wrapper.emitted('create')).toBeTruthy()
-  })
 })

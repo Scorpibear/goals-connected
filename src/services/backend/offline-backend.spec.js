@@ -75,9 +75,10 @@ describe('OfflineBackend', () => {
     })
   })
   describe('getTimeline', () => {
-    it('returns the timeline', () => {
+    it('returns the timeline', async () => {
       let backend = new OfflineBackend({ goalsData })
-      const timeline = backend.getTimeline()
+      const timeline = await backend.getTimeline()
+      expect(timeline).toBeDefined()
       expect('length' in timeline).toBeTruthy()
     })
     afterEach(() => {

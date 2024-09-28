@@ -22,7 +22,7 @@ class Response {
 }
 
 export default {
-  create: ({ goalsData, onBindingsUpdate }) => {
+  create: ({ goalsData, onUpdate }) => {
     const funcMap = {
       '/goal': goal,
       '/actgoals': actgoals,

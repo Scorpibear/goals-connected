@@ -51,8 +51,9 @@ describe('fetchLocal', () => {
     ]
   }
   it('resolves with local data', async () => {
-    const fetch = FetchLocal.create({ base: '../offline', goalsData })
-    const output = await fetch('/goal')
+    const fetch = FetchLocal.create({ goalsData })
+    const response = await fetch('/goals')
+    const output = await response.json()
     expect(output).toEqual(goalsData.goals)
   })
 })

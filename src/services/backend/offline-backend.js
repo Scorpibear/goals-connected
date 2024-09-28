@@ -7,8 +7,8 @@ export class OfflineBackend extends GoalsBackend {
 
   constructor({ goalsData } = {}) {
     super()
-    goalsData ||= this.goalsData
-    this.fetch = FetchLocal.create({ base: '@/src/offline', goalsData })
+    goalsData ||= this.loadGoalsData()
+    this.fetch = FetchLocal.create({ goalsData })
     console.debug('OfflineBackend::fetch: ', this.fetch)
   }
 
@@ -16,7 +16,7 @@ export class OfflineBackend extends GoalsBackend {
     return (OfflineBackend.defaultInstance ||= new OfflineBackend())
   }
 
-  get goalsData() {
+  loadGoalsData() {
     try {
       return JSON.parse(localStorage.getItem(this.goalsDataKey))
     } catch {
