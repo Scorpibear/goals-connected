@@ -1,6 +1,7 @@
 const categoriesTree = [
   {
     title: 'Путь Создателя',
+    showOnTimeline: false,
     includes: [
       { title: 'Путь Отца', tags: ['семья'] },
       { title: 'Путь Создателя Продуктов', includes: [{ title: 'Путь SDET-архитектора' }] },
@@ -9,6 +10,7 @@ const categoriesTree = [
   },
   {
     title: 'Путь Мастера',
+    showOnTimeline: false,
     includes: [
       {
         title: 'Путь Мастера Жизни',
@@ -26,4 +28,8 @@ const categoriesTree = [
 const flat = (cats) =>
   cats.flatMap((cat) => (cat.includes?.length ? [cat, ...flat(cat.includes)] : cat))
 
-export default flat(categoriesTree)
+export const flatCategories = flat(categoriesTree)
+
+export const timelineCategories = flatCategories.filter(
+  ({ showOnTimeline }) => showOnTimeline === undefined || showOnTimeline === true
+)

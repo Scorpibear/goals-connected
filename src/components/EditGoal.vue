@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { VueTagsInput } from '@vojtechlanka/vue-tags-input'
-import CategoriesData from '../services/categories'
+import { flatCategories } from '../services/categories'
 
 const props = defineProps({
   model: Object
@@ -12,7 +12,7 @@ const goalData = ref({ ...props.model, children: undefined })
 const tag = ref('')
 const tags = ref(props.model.tags ? props.model.tags.map((tagName) => ({ text: tagName })) : [])
 
-const categories = CategoriesData.map(({ title }) => title);
+const categories = flatCategories.map(({ title }) => title);
 
 const emit = defineEmits(['doneEdit'])
 

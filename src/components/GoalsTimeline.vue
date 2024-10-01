@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import GoalsTree from './GoalsTree.vue'
 import AddGoalFromTimeline from './AddGoalFromTimeline.vue'
-import CategoriesData from '../services/categories'
+import { timelineCategories } from '../services/categories'
 
 const props = defineProps({
   initGoals: {
@@ -19,9 +19,9 @@ const props = defineProps({
 
 const focusedCell = ref(undefined)
 
-const goalsList = ref(props.initGoals)
+const goalsList = ref(undefined)
 
-const categoriesData = CategoriesData;
+const categoriesData = timelineCategories;
 
 /*
 const categoriesData = [
@@ -40,7 +40,6 @@ const categoriesData = [
 ]*/
 
 const getSectionLastDate = (section) => {
-  console.debug('Getting last date for section:', section)
   const date = new Date((Date.parse(section?.end) || Date.now()) - 1)
   return date.toISOString().split('T')[0]
 }
@@ -74,13 +73,10 @@ function onMove(goal, direction, sectionIndex) {
 
 onMounted(async () => {
   try {
-    if (props.backend?.getTimeline) {
-      goalsList.value = await props.backend.getTimeline()
-    } else {
-      console.warn('Backend does not support getTimeline method: ' + props.backend?.constructor.name)
-    }
+    goalsList.value = props.backend?.getTimeline ? await props.backend.getTimeline() : props.initGoals;
     goalsList.value?.forEach((section) => (section.id = Math.random()))
-  } finally {
+  } catch (err) {
+    console.error(err)
   }
 })
 
@@ -122,9 +118,9 @@ onMounted(async () => {
             (goal) => !goal.tags?.some((tag) => categoriesData.map((c) => c.title).includes(tag))
           )
             " :key="section.goals.length" :moveConfig="{
-            mode: 'timeline',
-            onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-          }"></GoalsTree>
+              mode: 'timeline',
+              onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
+            }"></GoalsTree>
         </td>
       </tr>
     </tbody>

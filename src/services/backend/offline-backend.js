@@ -9,7 +9,7 @@ export class OfflineBackend extends GoalsBackend {
     super()
     goalsData ||= this.loadGoalsData()
     this.fetch = FetchLocal.create({ goalsData })
-    console.debug('OfflineBackend::fetch: ', this.fetch)
+    this.endpoint = ''
   }
 
   static getDefaultInstance() {
@@ -20,7 +20,7 @@ export class OfflineBackend extends GoalsBackend {
     try {
       return JSON.parse(localStorage.getItem(this.goalsDataKey))
     } catch {
-      return {}
+      return null
     }
   }
 }

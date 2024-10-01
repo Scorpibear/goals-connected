@@ -42,7 +42,6 @@ export class GoalsBackend {
 
   updateGoal(goalData) {
     try {
-      console.debug('Updating the goal with the following data: ' + JSON.stringify(goalData))
       const apiPath = '/goal'
       const url = `${this.apiPath2url(apiPath)}&id=${goalData.id}`
       return this.fetch(url, {
@@ -56,7 +55,6 @@ export class GoalsBackend {
 
   async fetchGoals(apiPath) {
     try {
-      console.debug(`fetchGoals: apiPath = '${apiPath}'`)
       const url = this.apiPath2url(apiPath)
       let response = await this.fetch(url)
       let goalsData = await response.json()
