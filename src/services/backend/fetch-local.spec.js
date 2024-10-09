@@ -1,10 +1,10 @@
-import FetchLocal from './fetch-local'
+import { default as FetchLocal, Request, Response } from './fetch-local'
 
 describe('fetchLocal', () => {
   const goalsData = {
     goals: [
       {
-        id: '986c1013-5dc4-4d64-92e0-1c1c3428eb4a',
+        id: '12-34-56',
         title: 'Be happy',
         type: 0,
         children: [
@@ -55,5 +55,50 @@ describe('fetchLocal', () => {
     const response = await fetch('/goals')
     const output = await response.json()
     expect(output).toEqual(goalsData.goals)
+  })
+  it('calls onUpdate with updated goals', async () => {
+    const onUpdate = vi.fn()
+    const fetch = FetchLocal.create({ goalsData, onUpdate })
+    await fetch('/goal?id=12-34-56', {
+      method: 'PUT',
+      body: JSON.stringify({ title: 'Be happy!' })
+    })
+    expect(onUpdate).toHaveBeenCalledWith(goalsData)
+  })
+})
+
+describe('Response', () => {
+  it('text() returns text representation of body', async () => {
+    const res = new Response({ body: 'Good' })
+    expect(await res.text()).toEqual('Good')
+  })
+  it('json() returns json representation of body', async () => {
+    const res = new Response({ body: '{"a": 42}' })
+    expect(await res.json()).toEqual({ a: 42 })
+  })
+  it('body returns parsed body', async () => {
+    const res = new Response({ body: '{"a": 42}' })
+    expect(res.body).toEqual({ a: 42 })
+  })
+  it('body returns unparsed body', async () => {
+    const res = new Response({ body: { a: 42 } })
+    expect(res.body).toEqual({ a: 42 })
+  })
+  it('body could be string text, not object', async () => {
+    const res = new Response({ body: 'Good' })
+    expect(res.body).toEqual('Good')
+  })
+})
+
+describe('Request', () => {
+  it('parses url and requestInit', async () => {
+    const req = new Request('/goals?code=42', { method: 'POST' })
+    expect(req.path).toEqual('/goals')
+    expect(req.query).toEqual({ code: '42' })
+    expect(req.method).toEqual('POST')
+  })
+  it('parses body', async () => {
+    const req = new Request('/goals', { body: JSON.stringify({ a: 42 }) })
+    expect(req.body).toEqual({ a: 42 })
   })
 })

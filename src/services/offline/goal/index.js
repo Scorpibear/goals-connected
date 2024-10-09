@@ -28,6 +28,8 @@ export default async function (context, req, goals) {
   // TODO: add logic of moving the goal via changing it's parentId
 
   try {
+    console.debug('Offline goal service called with:', req.method, req.query, req.body, goals)
+    console.debug('req.body type: ', typeof req.body)
     const goalData = req.body
 
     if (['PUT', 'POST'].includes(req.method) && !goalData) {

@@ -7,8 +7,8 @@ export class OfflineBackend extends GoalsBackend {
 
   constructor({ goalsData } = {}) {
     super()
-    goalsData ||= this.loadGoalsData()
-    this.fetch = FetchLocal.create({ goalsData })
+    this.goalsData = goalsData || this.loadGoalsData()
+    this.fetch = FetchLocal.create({ goalsData: this.goalsData })
     this.endpoint = ''
   }
 
@@ -17,10 +17,11 @@ export class OfflineBackend extends GoalsBackend {
   }
 
   loadGoalsData() {
+    let data = { goals: [{ id: '0-0-0-0-0-0-0', title: 'Be happy' }], types: [] }
     try {
-      return JSON.parse(localStorage.getItem(this.goalsDataKey))
-    } catch {
-      return null
-    }
+      let loaded = JSON.parse(localStorage.getItem(this.goalsDataKey))
+      if (loaded.goals && loaded.types) data = loaded
+    } catch {}
+    return data
   }
 }

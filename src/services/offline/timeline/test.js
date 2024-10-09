@@ -1,13 +1,14 @@
 import getTimeline from './index'
+import { vi } from 'vitest'
 
 describe('getTimeline', () => {
   let context = {}
   let req = {}
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    vi.useFakeTimers('modern')
   })
   it('returns goals for this week', async () => {
-    jest.setSystemTime(Date.parse('2024-06-11'))
+    vi.setSystemTime(Date.parse('2024-06-11'))
     let data = {
       goals: [{ title: 'the goal', targetDate: '2024-06-12' }]
     }
@@ -17,7 +18,7 @@ describe('getTimeline', () => {
     ])
   })
   it('returns goals for this month', async () => {
-    jest.setSystemTime(Date.parse('2024-06-03'))
+    vi.setSystemTime(Date.parse('2024-06-03'))
     let data = {
       goals: [
         { title: 'the week goal', targetDate: '2024-06-07' },
@@ -33,7 +34,7 @@ describe('getTimeline', () => {
     })
   })
   it('uses next month if the week includes the last day of the month', async () => {
-    jest.setSystemTime(Date.parse('2024-05-30'))
+    vi.setSystemTime(Date.parse('2024-05-30'))
     let data = {
       goals: [
         { title: 'the week goal', targetDate: '2024-05-31' },
@@ -48,7 +49,7 @@ describe('getTimeline', () => {
     })
   })
   it('show quarter goals', async () => {
-    jest.setSystemTime(Date.parse('2024-05-30'))
+    vi.setSystemTime(Date.parse('2024-05-30'))
     let data = {
       goals: [
         { title: 'the week goal', targetDate: '2024-05-31' },
@@ -68,7 +69,7 @@ describe('getTimeline', () => {
     )
   })
   it('creates quarter section', async () => {
-    jest.setSystemTime(Date.parse('2024-06-09'))
+    vi.setSystemTime(Date.parse('2024-06-09'))
     let data = { goals: [{ title: 'quarter goal', targetDate: '2024-09-30' }] }
 
     await getTimeline(context, req, data)
@@ -87,7 +88,7 @@ describe('getTimeline', () => {
     expect(JSON.parse(context.res.body)[0].end).toBeDefined()
   })
   it('returns hierarchy', async () => {
-    jest.setSystemTime(Date.parse('2024-08-01'))
+    vi.setSystemTime(Date.parse('2024-08-01'))
     let data = {
       goals: [
         {
@@ -108,7 +109,7 @@ describe('getTimeline', () => {
     })
   })
   it('returns localized headers', async () => {
-    jest.setSystemTime(Date.parse('2024-08-01'))
+    vi.setSystemTime(Date.parse('2024-08-01'))
     let data = {
       goals: [
         {
@@ -125,6 +126,6 @@ describe('getTimeline', () => {
     expect(context.res.body).toContain('Август')
   })
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 })

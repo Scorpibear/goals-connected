@@ -85,4 +85,14 @@ describe('OfflineBackend', () => {
       vi.clearAllMocks()
     })
   })
+  describe('loadGoalsData', () => {
+    it('returns empty goals template if no data in localStorage', async () => {
+      getItemSpy.mockReturnValue(null)
+      let backend = new OfflineBackend()
+      const goalsData = await backend.loadGoalsData()
+      expect(goalsData).toBeDefined()
+      expect(goalsData.goals).toBeDefined()
+      expect(goalsData.types).toBeDefined()
+    })
+  })
 })
