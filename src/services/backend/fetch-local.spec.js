@@ -50,15 +50,18 @@ describe('fetchLocal', () => {
       }
     ]
   }
+
+  const goalsProvider = { loadGoalsData: () => goalsData, saveGoalsData: () => {} }
+
   it('resolves with local data', async () => {
-    const fetch = FetchLocal.create({ goalsData })
+    const fetch = FetchLocal.create({ goalsProvider })
     const response = await fetch('/goals')
     const output = await response.json()
     expect(output).toEqual(goalsData.goals)
   })
   it('calls onUpdate with updated goals', async () => {
     const onUpdate = vi.fn()
-    const fetch = FetchLocal.create({ goalsData, onUpdate })
+    const fetch = FetchLocal.create({ goalsProvider, onUpdate })
     await fetch('/goal?id=12-34-56', {
       method: 'PUT',
       body: JSON.stringify({ title: 'Be happy!' })
@@ -100,5 +103,13 @@ describe('Request', () => {
   it('parses body', async () => {
     const req = new Request('/goals', { body: JSON.stringify({ a: 42 }) })
     expect(req.body).toEqual({ a: 42 })
+  })
+  it('users body as is if it is an object', async () => {
+    const req = new Request('/goals', { body: { a: 42 } })
+    expect(req.body).toEqual({ a: 42 })
+  })
+  it('users body as is if it is not parsable string', async () => {
+    const req = new Request('/goals', { body: 'Good' })
+    expect(req.body).toEqual('Good')
   })
 })

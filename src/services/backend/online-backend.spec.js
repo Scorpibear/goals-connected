@@ -69,7 +69,7 @@ describe('OnlineBackend', () => {
 
   describe('moveUp', () => {
     it('calls PATCH /goal with action:moveUp', async () => {
-      vi.spyOn(backend, 'fetch')
+      vi.spyOn(backend, 'fetch').mockResolvedValue(fetchResultStub)
       await backend.moveUp('id-12')
       expect(backend.fetch).toHaveBeenCalledWith(
         expect.stringMatching(/\/goal\?(.*)id=id-12&action=moveUp/),

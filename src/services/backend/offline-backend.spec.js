@@ -74,25 +74,18 @@ describe('OfflineBackend', () => {
       expect(instance1).toBe(instance2)
     })
   })
+
+  const goalsProvider = { loadGoalsData: () => goalsData, saveGoalsData: () => {} }
+
   describe('getTimeline', () => {
     it('returns the timeline', async () => {
-      let backend = new OfflineBackend({ goalsData })
+      let backend = new OfflineBackend(goalsProvider)
       const timeline = await backend.getTimeline()
       expect(timeline).toBeDefined()
       expect('length' in timeline).toBeTruthy()
     })
     afterEach(() => {
       vi.clearAllMocks()
-    })
-  })
-  describe('loadGoalsData', () => {
-    it('returns empty goals template if no data in localStorage', async () => {
-      getItemSpy.mockReturnValue(null)
-      let backend = new OfflineBackend()
-      const goalsData = await backend.loadGoalsData()
-      expect(goalsData).toBeDefined()
-      expect(goalsData.goals).toBeDefined()
-      expect(goalsData.types).toBeDefined()
     })
   })
 })

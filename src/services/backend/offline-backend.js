@@ -1,27 +1,18 @@
 import FetchLocal from './fetch-local'
+import LocalGoalsProvider from './local-goals-provider'
 import { GoalsBackend } from './goals-backend'
 
 export class OfflineBackend extends GoalsBackend {
   goalsDataKey = 'gc-goals-data'
   static defaultInstance = null
 
-  constructor({ goalsData } = {}) {
+  constructor(goalsProvider = new LocalGoalsProvider()) {
     super()
-    this.goalsData = goalsData || this.loadGoalsData()
-    this.fetch = FetchLocal.create({ goalsData: this.goalsData })
-    this.endpoint = ''
+    this.fetch = FetchLocal.create({ goalsProvider })
+    this.endpoint = '' // used by parent class to construct the URL for fetch
   }
 
   static getDefaultInstance() {
     return (OfflineBackend.defaultInstance ||= new OfflineBackend())
-  }
-
-  loadGoalsData() {
-    let data = { goals: [{ id: '0-0-0-0-0-0-0', title: 'Be happy' }], types: [] }
-    try {
-      let loaded = JSON.parse(localStorage.getItem(this.goalsDataKey))
-      if (loaded.goals && loaded.types) data = loaded
-    } catch {}
-    return data
   }
 }

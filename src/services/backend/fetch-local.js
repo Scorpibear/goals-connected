@@ -59,8 +59,7 @@ export class Request {
 }
 
 export default {
-  create: ({ goalsData, onUpdate }) => {
-    console.debug('FetchLocal create: goalsData: ', goalsData)
+  create: ({ goalsProvider, onUpdate }) => {
     const funcMap = {
       '/goal': goal,
       '/actgoals': actgoals,
@@ -74,8 +73,10 @@ export default {
     }
     return async (url, requestInit) => {
       const func = getFuncByPath(url)
+      const initGoalsData = goalsProvider.loadGoalsData()
       const context = { res: {}, log: console.log, bindings: {} }
-      func(context, new Request(url, requestInit), goalsData)
+      func(context, new Request(url, requestInit), goalsProvider.loadGoalsData())
+      if (context.bindings.outGoals) goalsProvider.saveGoalsData(context.bindings.outGoals)
       if (onUpdate) onUpdate(context.bindings.outGoals)
       return new Response(context.res)
     }
