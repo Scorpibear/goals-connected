@@ -21,13 +21,25 @@ const categoriesTree = [
           {
             title: 'Путь Мастера Спорта',
             includes: [
-              { id: 'chess', title: 'Путь Шахматиста', includes: [{ title: 'Путь 3kGM' }] }
+              {
+                id: 'chess',
+                title: 'Путь Шахматиста',
+                showOnTimeline: false,
+                includes: [{ title: 'Путь 3kGM' }]
+              }
             ]
           },
-          { title: 'Путь Инвестора' },
-          { title: 'Путь Мастера Разработки', includes: [{ id: 'cpp', title: 'Мастер С++' }] },
           { title: 'Путь Полиглота' },
-          { title: 'Путь Игрока', includes: [{ title: 'Путь Покериста' }, { id: 'chess' }] }
+          {
+            title: 'Путь Мастера Разработки',
+            includes: [{ id: 'cpp', title: 'Мастер С++', showOnTimeline: false }]
+          },
+          { title: 'Путь Инвестора' },
+          {
+            title: 'Путь Игрока',
+            showOnTimeline: false,
+            includes: [{ title: 'Путь Покериста', showOnTimeline: false }, { id: 'chess' }]
+          }
         ]
       }
     ]
