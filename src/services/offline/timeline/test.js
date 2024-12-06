@@ -6,6 +6,7 @@ describe('getTimeline', () => {
   let req = {}
   beforeAll(() => {
     vi.useFakeTimers('modern')
+    vi.setSystemLo
   })
   it('returns goals for this week', async () => {
     vi.setSystemTime(Date.parse('2024-06-11'))
@@ -14,7 +15,7 @@ describe('getTimeline', () => {
     }
     await getTimeline(context, req, data)
     expect(JSON.parse(context.res.body)).toEqual([
-      { title: 'Week', end: '2024-06-16T20:59:59.999Z', goals: data.goals }
+      { title: 'Week', end: '2024-06-16T23:59:59.999Z', goals: data.goals }
     ])
   })
   it('returns goals for this month', async () => {
@@ -29,7 +30,7 @@ describe('getTimeline', () => {
     expect(context.res.body).toContain('June')
     expect(JSON.parse(context.res.body)[1]).toEqual({
       title: 'June',
-      end: '2024-06-30T20:59:59.999Z',
+      end: '2024-06-30T23:59:59.999Z',
       goals: [{ title: 'the month goal', targetDate: '2024-06-30' }]
     })
   })
@@ -44,7 +45,7 @@ describe('getTimeline', () => {
     await getTimeline(context, req, data)
     expect(JSON.parse(context.res.body)[1]).toEqual({
       title: 'June',
-      end: '2024-06-30T20:59:59.999Z',
+      end: '2024-06-30T23:59:59.999Z',
       goals: [{ title: 'the month goal', targetDate: '2024-06-30' }]
     })
   })
@@ -76,7 +77,7 @@ describe('getTimeline', () => {
 
     expect(JSON.parse(context.res.body)[0]).toEqual({
       title: '24Q3',
-      end: '2024-09-30T20:59:59.999Z',
+      end: '2024-09-30T23:59:59.999Z',
       goals: [{ title: 'quarter goal', targetDate: '2024-09-30' }]
     })
   })
@@ -104,7 +105,7 @@ describe('getTimeline', () => {
     expect(context.res.body).toContain('August')
     expect(JSON.parse(context.res.body)[1]).toEqual({
       title: 'August',
-      end: '2024-08-31T20:59:59.999Z',
+      end: '2024-08-31T23:59:59.999Z',
       goals: data.goals
     })
   })

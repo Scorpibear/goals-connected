@@ -15,7 +15,8 @@ export default mergeConfig(
         deps: {
           inline: ['@vojtechlanka/vue-tags-input']
         }
-      }
+      },
+      globalSetup: './vitest.global-setup.js'
     }
   })
 )
