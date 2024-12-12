@@ -1,19 +1,18 @@
+export const USER_ID_KEY = 'userId'
+
 export class GoalsBackend {
-  constructor(endpoint, key, userId) {
-    this.endpoint =
-      endpoint || localStorage.getItem('endpoint') || 'https://goalsconnected.azurewebsites.net/api'
-    this.key =
-      key ||
-      localStorage.getItem('key') ||
-      'cYt1GnWRW1KjJY7eW6-jzOqk-Mctdd-cUWNavGoN9RvHAzFuGD4Tkw=='
-    this.userId = userId || localStorage.getItem('userId') || '01909322-0bff-72ed-a522-632d025e53df' // example;
+  fetch
+  userId
+
+  constructor() {
+    this.userId = localStorage.getItem(USER_ID_KEY)
   }
 
   async create(goalData) {
     try {
       console.log(`Creating the goal with data: '${JSON.stringify(goalData)}'`)
       const url = this.apiPath2url('/goal')
-      const response = await fetch(url, { method: 'POST', body: JSON.stringify(goalData) })
+      const response = await this.fetch(url, { method: 'POST', body: JSON.stringify(goalData) })
       return response.json()
     } catch (ex) {
       console.error('Issue while creating the goal: ' + ex)
@@ -25,7 +24,7 @@ export class GoalsBackend {
       console.log(`Deleting the goal with id = '${goalId}'`)
       const apiPath = '/goal'
       const url = `${this.apiPath2url(apiPath)}&id=${goalId}`
-      return fetch(url, {
+      return this.fetch(url, {
         method: 'DELETE'
       })
     } catch (ex) {
@@ -43,10 +42,9 @@ export class GoalsBackend {
 
   updateGoal(goalData) {
     try {
-      console.debug('Updating the goal with the following data: ' + JSON.stringify(goalData))
       const apiPath = '/goal'
       const url = `${this.apiPath2url(apiPath)}&id=${goalData.id}`
-      return fetch(url, {
+      return this.fetch(url, {
         method: 'PUT',
         body: JSON.stringify(goalData)
       })
@@ -58,7 +56,7 @@ export class GoalsBackend {
   async fetchGoals(apiPath) {
     try {
       const url = this.apiPath2url(apiPath)
-      let response = await fetch(url)
+      let response = await this.fetch(url)
       let goalsData = await response.json()
       return goalsData
     } catch (ex) {
@@ -100,7 +98,6 @@ export class GoalsBackend {
 
   async patch(id, action, params) {
     try {
-      console.debug(`${action} goal with id = '${id}'`)
       const apiPath = '/goal'
       let url = `${this.apiPath2url(apiPath)}&id=${id}&action=${action}`
       if (params) {
@@ -111,7 +108,7 @@ export class GoalsBackend {
         }
       }
 
-      const response = await fetch(url, { method: 'PATCH' })
+      const response = await this.fetch(url, { method: 'PATCH' })
       return response.text()
     } catch (ex) {
       console.error(`Could not ${action} the goal: `, ex)

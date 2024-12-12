@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import EditGoal from './EditGoal.vue'
-import BackendSelector from '@/services/backend-selector'
+import BackendSelector from '@/services/backend/backend-selector'
 
 const props = defineProps({
   baseGoalProps: Object,
@@ -30,7 +30,7 @@ function startEdit() {
 function doneEdit(newGoalData) {
   if (newGoalData) {
     emit('create', newGoalData)
-    props.backend.create(newGoalData)
+    props.backend.create(newGoalData).then(createdData => newGoalData.id = createdData.id);
   }
   editMode.value = false
 }
@@ -38,7 +38,7 @@ function doneEdit(newGoalData) {
 
 <template>
   <EditGoal v-if="editMode" @doneEdit="doneEdit" :model="goalData" />
-  <div v-else class="startCreate" @dblclick="startEdit">+</div>
+  <div v-else class="startCreate" @dblclick="startEdit" role="button" id="add">+</div>
 </template>
 
 <style>

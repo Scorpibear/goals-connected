@@ -39,16 +39,8 @@ onMounted(async () => {
 
 <template>
   <ul>
-    <TreeItem
-      class="item"
-      v-for="(goal, index) in goalsList"
-      :model="goal"
-      :key="goal.id"
-      :collapsed="props.collapsed"
-      :container="index ? goalsList : null"
-      :moveConfig="moveConfig"
-      @delete="onDelete"
-    ></TreeItem>
+    <TreeItem class="item" v-for="(goal, index) in goalsList" :model="goal" :key="goal.id" :collapsed="props.collapsed"
+      :container="index ? goalsList : null" :moveConfig="moveConfig" @delete="onDelete"></TreeItem>
   </ul>
 </template>
 

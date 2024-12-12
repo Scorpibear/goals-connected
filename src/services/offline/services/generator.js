@@ -1,4 +1,4 @@
-class Generator {
+export default class Generator {
   static lastId = ''
   static getNewId() {
     let newId
@@ -11,7 +11,3 @@ class Generator {
     return newId
   }
 }
-
-module.exports = Generator;
-
-
