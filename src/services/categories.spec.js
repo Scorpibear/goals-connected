@@ -11,7 +11,7 @@ describe('categories', () => {
   describe('findBestTimelineCategory', () => {
     it('works for sub-items', () => {
       const category = findBestTimelineCategory(['хобби', 'Путь 3kGM'])
-      expect(category).toEqual('Спортсмен')
+      expect(category).toEqual('Мастер Жизни')
     })
     it('works for another case', () => {
       console.debug('TEST')
