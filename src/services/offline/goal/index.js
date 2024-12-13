@@ -1,26 +1,6 @@
 import Generator from '../services/generator'
 import { quarterDate } from '../services/date-utils'
-import { getGoalData } from '../services/goal-utils'
-
-// only valid goal properties has to be updated, other source properties to be ignored. Id should remain unchanged
-const updateGoalProperties = (target, source) =>
-  ['title', 'targetDate', 'tags', 'type', 'completed'].reduce((target, propertyName) => {
-    if (propertyName in source) {
-      target[propertyName] = source[propertyName]
-    }
-    return target
-  }, target)
-
-function deleteGoal(container, id) {
-  if (!container?.length) return null
-  let index = container.findIndex((goal) => goal.id == id)
-  if (index != -1) {
-    const target = container[index]
-    container.splice(index, 1)
-    return target
-  }
-  return container.some((goal) => deleteGoal(goal?.children, id))
-}
+import { deleteGoal, getGoalData, updateGoalProperties } from '@/services/goal-utils'
 
 export default async function (context, req, goals) {
   // /POST /goal {title, [parentId], [type], [targetDate], [rank?/order?], [tags]}
