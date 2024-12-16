@@ -1,6 +1,7 @@
-import { getGoalData } from './goal-utils'
+import { describe, it, expect } from 'vitest'
+import { getGoalData, updateGoalProperties } from '@/services/goal-utils'
 
-describe('goal-utils', () => {
+describe('goal utils', () => {
   describe('getGoalData', () => {
     it('returns parentContainer for threefold goal', () => {
       const goalList = [{ id: 'goal1', children: [{ id: 'goal2', children: [{ id: 'goal3' }] }] }]
@@ -45,6 +46,34 @@ describe('goal-utils', () => {
       ]
       const { container } = getGoalData(goalList, 'goal2')
       expect(container).toBe(goalList[0].children)
+    })
+  })
+  describe('updateGoalProperties', () => {
+    it('updates only valid properties', () => {
+      const target = {
+        id: 'id',
+        title: 'title',
+        targetDate: 'targetDate',
+        tags: 'tags',
+        type: 'type',
+        sourceProperty: 'untouched'
+      }
+      const source = {
+        title: 'new title',
+        targetDate: 'new targetDate',
+        tags: 'new tags',
+        type: 'new type',
+        sourceProperty: 'new sourceProperty'
+      }
+      const updated = updateGoalProperties(target, source)
+      expect(updated).toEqual({
+        id: 'id',
+        title: 'new title',
+        targetDate: 'new targetDate',
+        tags: 'new tags',
+        type: 'new type',
+        sourceProperty: 'untouched'
+      })
     })
   })
 })
