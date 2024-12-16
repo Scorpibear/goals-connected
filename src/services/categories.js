@@ -1,18 +1,20 @@
+const defaultCategories = [{ title: 'Creativity' }, { title: 'Growth' }, { title: 'Family' }]
+
 const categoriesTree = [
   {
-    title: 'Создатель',
-    tags: ['Путь Создателя'],
-    showOnTimeline: false,
+    title: 'Творчество',
+    tags: ['Путь Создателя', 'Создатель'],
+    showOnTimeline: true,
     includes: [
-      { title: 'Отец', tags: ['семья', 'Путь Отца'] },
       {
         title: 'Создатель продуктов',
         tags: ['Путь Создателя Продуктов'],
+        showOnTimeline: false,
         includes: [
           {
             id: 'SDET',
             title: 'SDET-архитектор',
-            showOnTimeline: true,
+            showOnTimeline: false,
             includes: [{ id: 'cpp', id: 'epic' }]
           }
         ]
@@ -27,8 +29,8 @@ const categoriesTree = [
     ]
   },
   {
-    title: 'Мастер Жизни',
-    tags: ['Путь Мастера Жизни'],
+    title: 'Развитие',
+    tags: ['Путь Мастера Жизни', 'Мастер Жизни'],
     includes: [
       {
         title: 'Спортсмен',
@@ -51,7 +53,7 @@ const categoriesTree = [
           }
         ]
       },
-      { title: 'Полиглот' },
+      { title: 'Полиглот', showOnTimeline: false },
       {
         title: 'Разработчик',
         tags: [
@@ -63,13 +65,17 @@ const categoriesTree = [
         showOnTimeline: false,
         includes: [{ id: 'cpp', title: 'Мастер С++', showOnTimeline: false }]
       },
-      { title: 'Инвестор' },
       {
         title: 'Игрок',
         showOnTimeline: false,
         includes: [{ title: 'Игрок в покер', showOnTimeline: false }, { id: 'chess' }]
       }
     ]
+  },
+  {
+    title: 'Семья',
+    tags: ['Путь Отца', 'Отец'],
+    includes: [{ title: 'финансы', tags: 'Путь Инвестора', showOnTimeline: false }]
   }
 ]
 
