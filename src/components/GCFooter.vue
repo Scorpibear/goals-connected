@@ -1,5 +1,9 @@
+<script setup>
+const version = process.env.PACKAGE_VERSION || '0.0.0';
+</script>
+
 <template>
-  <footer>Goals Connected &copy; LifeIdea.org</footer>
+  <footer>Goals Connected v{{ version }} &copy; LifeIdea.org</footer>
 </template>
 
 <style>
