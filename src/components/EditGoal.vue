@@ -38,18 +38,21 @@ function cancelEdit() {
 </script>
 
 <template>
-  <input id="edit" class="edit" type="text" v-model="goalData.title" @vue:mounted="({ el }) => el.focus()"
-    @keyup.enter="doneEdit" @keyup.escape="cancelEdit" :size="Math.max(model.title.length, 40)" />
-  by <input id="targetDate" type="date" v-model="goalData.targetDate" /><br />
-  <label for="type">Type: </label><select id="type" v-model="goalData.type">
-    <option value="0">State</option>
-    <option value="1">Result</option>
-    <option value="2">Action</option>
-  </select><vue-tags-input v-model="tag" :tags="tags"
-    :autocomplete-items="categories.map((category) => ({ text: category }))"
-    @tags-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
-    @tag-order-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))" />
-  <button @click="doneEdit" type="button" id="save">Save</button><button @click="cancelEdit">Cancel</button>
+  <form @submit.prevent @keyup.enter="doneEdit" @keyup.escape="cancelEdit">
+    <input id="edit" class="edit" type="text" v-model="goalData.title" @vue:mounted="({ el }) => el.focus()"
+      :size="Math.max(model.title.length, 40)" />
+    by <input id="targetDate" type="date" v-model="goalData.targetDate" /><br />
+    <label for="type">Type: </label><select id="type" v-model="goalData.type">
+      <option value="0">State</option>
+      <option value="1">Result</option>
+      <option value="2">Action</option>
+    </select><vue-tags-input v-model="tag" :tags="tags"
+      :autocomplete-items="categories.map((category) => ({ text: category }))"
+      @tags-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
+      @tag-order-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))" />
+    <button @click="doneEdit" type="button" id="save">Save</button><button @click="cancelEdit"
+      type="button">Cancel</button>
+  </form>
 </template>
 
 <style>

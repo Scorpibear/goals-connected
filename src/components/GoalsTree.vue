@@ -19,6 +19,8 @@ const props = defineProps({
 
 const goalsList = ref(props.initGoals)
 
+const emit = defineEmits(['dateChange'])
+
 function onDelete(goalId) {
   const goalIndex = goalsList.value.findIndex(({ id }) => id == goalId)
   if (goalIndex >= 0) {
@@ -40,7 +42,8 @@ onMounted(async () => {
 <template>
   <ul>
     <TreeItem class="item" v-for="(goal, index) in goalsList" :model="goal" :key="goal.id" :collapsed="props.collapsed"
-      :container="index ? goalsList : null" :moveConfig="moveConfig" @delete="onDelete"></TreeItem>
+      :container="index ? goalsList : null" :moveConfig="moveConfig" @delete="onDelete"
+      @date-change="emit('dateChange')"></TreeItem>
   </ul>
 </template>
 

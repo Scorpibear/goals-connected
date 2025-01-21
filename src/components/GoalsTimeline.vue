@@ -23,6 +23,8 @@ const goalsList = ref(undefined)
 
 const categoriesData = timelineCategories;
 
+const emit = defineEmits(['dateChange'])
+
 const getSectionLastDate = (section) => {
   const date = new Date((Date.parse(section?.end) || Date.now()) - 1)
   return date.toISOString().split('T')[0]
@@ -88,7 +90,7 @@ onMounted(async () => {
             :key="section.goals.length" :moveConfig="{
               mode: 'timeline',
               onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-            }"></GoalsTree>
+            }" @date-change="emit('dateChange')"></GoalsTree>
           <AddGoalFromTimeline v-if="sectionIndex != goalsList.length - 1"
             :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
             @create="goal => section.goals.push(goal)" />

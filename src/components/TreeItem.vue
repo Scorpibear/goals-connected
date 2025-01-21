@@ -28,7 +28,7 @@ const props = defineProps({
 
 const selected = ref(false)
 
-const emit = defineEmits(['create', 'delete', 'levelUp'])
+const emit = defineEmits(['create', 'delete', 'levelUp', 'dateChange'])
 
 const newGoalTitle = 'new goal'
 const newGoalId = 'id-new-tbd'
@@ -85,13 +85,16 @@ function startEdit() {
 }
 
 function doneEdit(updatedGoalData) {
-  console.debug('TreeItem:doneEdit:updatedGoalData:', updatedGoalData)
   if (updatedGoalData) {
+    const initDate = props.model.targetDate;
     updateGoalProperties(props.model, updatedGoalData)
     if (newGoal) {
       emit('create', props.model)
     } else {
       props.backend.updateGoal(updatedGoalData)
+      if (initDate != props.model.targetDate) {
+        emit('dateChange', props.model)
+      }
     }
   }
   editMode.value = false
