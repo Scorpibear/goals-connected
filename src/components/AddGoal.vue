@@ -38,7 +38,7 @@ function doneEdit(newGoalData) {
 
 <template>
   <EditGoal v-if="editMode" @doneEdit="doneEdit" :model="goalData" />
-  <div v-else class="startCreate" @dblclick="startEdit" role="button" id="add">+</div>
+  <div v-else class="startCreate" @click="startEdit" role="button" id="add">+</div>
 </template>
 
 <style>

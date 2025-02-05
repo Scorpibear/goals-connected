@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import GoalsTree from './GoalsTree.vue'
-import AddGoalFromTimeline from './AddGoalFromTimeline.vue'
+import AddGoalFromTimeline from './AddGoal.vue'
 import { timelineCategories, findBestTimelineCategory } from '../services/categories'
 
 const props = defineProps({
@@ -90,10 +90,9 @@ onMounted(async () => {
             :key="section.goals.length" :moveConfig="{
               mode: 'timeline',
               onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-            }" @date-change="emit('dateChange')"></GoalsTree>
-          <AddGoalFromTimeline v-if="sectionIndex != goalsList.length - 1"
+            }" @date-change="emit('dateChange')"
             :baseGoalProps="{ tags: [category.title], targetDate: getSectionLastDate(section) }"
-            @create="goal => section.goals.push(goal)" />
+            @create="goal => section.goals.push(goal)"></GoalsTree>
         </td>
       </tr>
       <tr>
