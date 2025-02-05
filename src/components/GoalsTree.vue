@@ -16,7 +16,11 @@ const props = defineProps({
     default: true
   },
   moveConfig: Object,
-  baseGoalProps: Object
+  baseGoalProps: Object,
+  addGoalAsButton: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const goalsList = ref(props.initGoals)
@@ -47,7 +51,7 @@ onMounted(async () => {
       :container="index ? goalsList : null" :moveConfig="moveConfig" @delete="onDelete"
       @date-change="emit('dateChange')"></TreeItem>
     <li>
-      <AddGoal :backend :base-goal-props @create="data => emit('create', data)" />
+      <AddGoal :backend :base-goal-props @create="data => emit('create', data)" :asButton="addGoalAsButton" />
     </li>
   </ul>
 </template>
