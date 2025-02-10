@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import TreeItem from './TreeItem.vue'
+import AddGoal from './AddGoal.vue'
 
 const props = defineProps({
   initGoals: {
@@ -14,12 +15,17 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  moveConfig: Object
+  moveConfig: Object,
+  baseGoalProps: Object,
+  addGoalAsButton: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const goalsList = ref(props.initGoals)
 
-const emit = defineEmits(['dateChange'])
+const emit = defineEmits(['create', 'dateChange'])
 
 function onDelete(goalId) {
   const goalIndex = goalsList.value.findIndex(({ id }) => id == goalId)
@@ -44,6 +50,9 @@ onMounted(async () => {
     <TreeItem class="item" v-for="(goal, index) in goalsList" :model="goal" :key="goal.id" :collapsed="props.collapsed"
       :container="index ? goalsList : null" :moveConfig="moveConfig" @delete="onDelete"
       @date-change="emit('dateChange')"></TreeItem>
+    <li>
+      <AddGoal :backend :base-goal-props @create="data => emit('create', data)" :asButton="addGoalAsButton" />
+    </li>
   </ul>
 </template>
 
