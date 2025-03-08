@@ -2,6 +2,11 @@ const defaultCategories = [{ title: 'Creativity' }, { title: 'Growth' }, { title
 
 const categoriesTree = [
   {
+    title: 'Семья',
+    tags: ['Путь Отца', 'Отец'],
+    includes: [{ title: 'финансы', tags: 'Путь Инвестора', showOnTimeline: false }]
+  },
+  {
     title: 'Творчество',
     tags: ['Путь Создателя', 'Создатель'],
     showOnTimeline: true,
@@ -71,11 +76,6 @@ const categoriesTree = [
         includes: [{ title: 'Игрок в покер', showOnTimeline: false }, { id: 'chess' }]
       }
     ]
-  },
-  {
-    title: 'Семья',
-    tags: ['Путь Отца', 'Отец'],
-    includes: [{ title: 'финансы', tags: 'Путь Инвестора', showOnTimeline: false }]
   }
 ]
 
