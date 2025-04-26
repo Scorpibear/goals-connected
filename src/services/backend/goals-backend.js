@@ -80,6 +80,10 @@ export class GoalsBackend {
     return this.fetchGoals('/timeline')
   }
 
+  async move(id, parentId) {
+    return this.patch(id, 'move', { parentId })
+  }
+
   async moveUp(id) {
     return this.patch(id, 'moveUp')
   }

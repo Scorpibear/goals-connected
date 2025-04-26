@@ -1,21 +1,20 @@
 <script setup>
-import { onMounted, ref, shallowRef, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { VueTagsInput } from '@vojtechlanka/vue-tags-input'
-import { TreeView } from '@grapoza/vue-tree'
 import { flatCategories } from '../services/categories'
-import BackendSelector from '@/services/backend/backend-selector';
-import { tree2list } from '@/services/goal-utils'
+import ParentChangeView from './ParentChangeView.vue'
+import BackendSelector from '@/services/backend/backend-selector'
 
 const props = defineProps({
   model: Object,
+  parent: Object,
   backend: {
     type: Object,
     default: BackendSelector.getBackend()
-  },
+  }
 })
 
 const goalData = ref({ ...props.model, children: undefined })
-let goalsTree = ref([]) // Use for hierarchical tree data
 
 const tag = ref('')
 const tags = ref(props.model.tags ? props.model.tags.map((tagName) => ({ text: tagName })) : [])
@@ -49,28 +48,21 @@ function cancelEdit() {
   emit('doneEdit', false)
 }
 
-// Function to load hierarchical tree data
-async function loadGoalsTree() {
-  const goalsTreeData = await props.backend.getGoalsTree();
-  goalsTree.value = transformToTreeViewFormat(goalsTreeData);
-}
-
-// Helper function to transform data
-function transformToTreeViewFormat(data) {
-  return data.map((node) => ({
-    id: node.id,
-    label: node.title, // Map 'title' to 'label'
-    children: node.children ? transformToTreeViewFormat(node.children) : [] // Recursively transform children
-  }));
-}
-
-function selectParentGoal(node) {
-  goalData.value = { ...goalData.value, parent: node.id }; // Ensure reactivity by creating a new object
-}
-
-onMounted(async () => {
-  await loadGoalsTree();
+const showParentChangeView = ref(false)
+const parentGoalName = computed(() => {
+  return props.parent ? props.parent.title : 'No parent'
 })
+
+function applyParentChange(newParent) {
+  console.debug('EditGoal:applyParentChange:newParent:', newParent);
+  props.backend?.move(props.model.id, newParent.id)
+  props.parent = newParent;
+  showParentChangeView.value = false
+}
+
+function cancelParentChange() {
+  showParentChangeView.value = false
+}
 </script>
 
 <template>
@@ -82,11 +74,12 @@ onMounted(async () => {
       <option value="0">State</option>
       <option value="1">Result</option>
       <option value="2">Action</option>
-    </select>
-    <!-- Parent Goal Dropdown -->
-    <label for="parent">Parent Goal: </label>
-    <TreeView id="parent-tree" :modelValue="goalsTree" selectionMode="single" @update:modelValue="selectParentGoal"
-      expandable selectable />
+    </select>&nbsp;
+    <label>Parent Goal: </label>
+    <span class="parent-goal-name">{{ parentGoalName }}</span>&nbsp;
+    <button type="button" @click="showParentChangeView = true">Change</button>
+    <ParentChangeView v-if="showParentChangeView" :currentParenId="goalData.parent?.id" @apply="applyParentChange"
+      @cancel="cancelParentChange" />
     <vue-tags-input v-model="tag" :tags="tags" :autocomplete-items="categories.map((category) => ({ text: category }))"
       @tags-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
       @tag-order-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))" />
@@ -105,5 +98,12 @@ button {
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
+}
+
+.parent-goal-name {
+  font-size: 0.9em;
+  /* Smaller font size for parent goal name */
+  color: #555;
+  /* Optional: lighter color for better distinction */
 }
 </style>

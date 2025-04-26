@@ -115,6 +115,26 @@ export default async function (context, req, goals) {
           goalId
         )
         switch (req.query.action) {
+          case 'move': {
+            const targetParentId = req.query.parentId
+            const { goal: targetParent } = getGoalData(goalContainer, targetParentId)
+            if (targetParent) {
+              if (!targetParent.children) targetParent.children = []
+              if (parent) {
+                parent.children.splice(index, 1)
+                if (parent.children.length == 0) delete parent.children
+              } else {
+                container.splice(index, 1)
+              }
+              targetParent.children.push(goal)
+            } else {
+              context.res = {
+                status: 400,
+                body: `Could not move the goal with id = '${goalId}', title = '${goal?.title}', index = ${index}`
+              }
+            }
+            break
+          }
           case 'moveUp': {
             if (index > 0) {
               parent.children.splice(index - 1, 2, goal, parent.children[index - 1])
