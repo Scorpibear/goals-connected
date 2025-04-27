@@ -47,3 +47,14 @@ export function deleteGoal(container, id) {
   }
   return container.some((goal) => deleteGoal(goal?.children, id))
 }
+
+export function tree2list(tree, list = []) {
+  tree.forEach((goal) => {
+    const { children, ...goalData } = goal
+    list.push(goalData)
+    if (children?.length) {
+      tree2list(children, list)
+    }
+  })
+  return list
+}

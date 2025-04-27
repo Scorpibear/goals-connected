@@ -103,7 +103,8 @@ onMounted(async () => {
             " :key="section.goals.length" :moveConfig="{
               mode: 'timeline',
               onMove: ({ goal, direction }) => onMove(goal, direction, sectionIndex)
-            }" />
+            }" @date-change="emit('dateChange')" :baseGoalProps="{ targetDate: getSectionLastDate(section) }"
+            @create="goal => section.goals.push(goal)" />
         </td>
       </tr>
     </tbody>

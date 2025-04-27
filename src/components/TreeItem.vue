@@ -178,7 +178,7 @@ function complete() {
         :class="{ completed: props.model.completed }">{{ model.title
         }}<span v-if="model.targetDate && selected">
           к {{ formatDate(model.targetDate) }}</span></span>
-      <EditGoal v-else :model @doneEdit="doneEdit" /><span v-if="!isFolder && selected" class="sign"
+      <EditGoal v-else :model :parent @doneEdit="doneEdit" /><span v-if="!isFolder && selected" class="sign"
         @dblclick="changeType">[+]</span><span v-if="selected" class="sign area">
         <span v-if="isFolder" @dblclick="startCreation">[+]</span>
         <span v-if="props.parent" @click="levelUp">[←]</span>

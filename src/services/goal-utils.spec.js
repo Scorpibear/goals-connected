@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getGoalData, updateGoalProperties } from '@/services/goal-utils'
+import { getGoalData, updateGoalProperties, tree2list } from '@/services/goal-utils'
 
 describe('goal utils', () => {
   describe('getGoalData', () => {
@@ -74,6 +74,28 @@ describe('goal utils', () => {
         type: 'new type',
         sourceProperty: 'untouched'
       })
+    })
+  })
+  describe('tree2list', () => {
+    it('converts tree to list', () => {
+      const tree = [
+        {
+          id: '1',
+          title: 'goal1',
+          children: [
+            { id: '1.1', title: 'goal1.1' },
+            { id: '1.2', title: 'goal1.2' }
+          ]
+        },
+        { id: '2', title: 'goal2' }
+      ]
+      const list = tree2list(tree)
+      expect(list).toEqual([
+        { id: '1', title: 'goal1' },
+        { id: '1.1', title: 'goal1.1' },
+        { id: '1.2', title: 'goal1.2' },
+        { id: '2', title: 'goal2' }
+      ])
     })
   })
 })

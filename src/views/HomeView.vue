@@ -6,5 +6,5 @@ const backend = BackendSelector.getBackend()
 </script>
 
 <template>
-  <GoalsTree :backend :collapsed="false" :moveConfig="{ mode: 'tree' }" addGoalAsButton="true" />
+  <GoalsTree :backend :collapsed="false" :moveConfig="{ mode: 'tree' }" :addGoalAsButton="true" />
 </template>
