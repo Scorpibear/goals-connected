@@ -161,7 +161,7 @@ onMounted(() => {
 })
 
 function complete() {
-  if ('complete' in props.model) {
+  if ('completed' in props.model) {
     props.model.completed = !props.model.completed
   } else {
     props.model.completed = true
