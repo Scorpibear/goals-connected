@@ -1,6 +1,6 @@
 {
   "name": "goals-connected",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -36,7 +36,7 @@
     "eslint": "^9.24.0",
     "eslint-plugin-cypress": "^4.2.0",
     "eslint-plugin-vue": "^9.27.0",
-    "gh-pages": "^6.2.0",
+    "gh-pages": "^6.3.0",
     "globals": "^16.0.0",
     "jsdom": "^25.0.0",
     "prettier": "^3.3.3",
