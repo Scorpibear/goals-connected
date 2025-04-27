@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { VueTagsInput } from '@vojtechlanka/vue-tags-input'
 import { flatCategories } from '../services/categories'
 import ParentChangeView from './ParentChangeView.vue'
@@ -15,6 +15,8 @@ const props = defineProps({
 })
 
 const goalData = ref({ ...props.model, children: undefined })
+let goalsTree = []
+const currentParent = ref(props.parent)
 
 const tag = ref('')
 const tags = ref(props.model.tags ? props.model.tags.map((tagName) => ({ text: tagName })) : [])
@@ -50,19 +52,26 @@ function cancelEdit() {
 
 const showParentChangeView = ref(false)
 const parentGoalName = computed(() => {
-  return props.parent ? props.parent.title : 'No parent'
+  return currentParent.value?.title || 'No parent'
 })
 
 function applyParentChange(newParent) {
   console.debug('EditGoal:applyParentChange:newParent:', newParent);
   props.backend?.move(props.model.id, newParent.id)
-  props.parent = newParent;
+  currentParent.value = newParent;
   showParentChangeView.value = false
 }
 
 function cancelParentChange() {
   showParentChangeView.value = false
 }
+
+onMounted(async () => {
+  try {
+    goalsTree = await props.backend.getGoalsTree();
+  } finally {
+  }
+});
 </script>
 
 <template>
@@ -79,7 +88,7 @@ function cancelParentChange() {
     <span class="parent-goal-name">{{ parentGoalName }}</span>&nbsp;
     <button type="button" @click="showParentChangeView = true">Change</button>
     <ParentChangeView v-if="showParentChangeView" :currentParenId="goalData.parent?.id" @apply="applyParentChange"
-      @cancel="cancelParentChange" />
+      @cancel="cancelParentChange" :goals-tree="goalsTree" />
     <vue-tags-input v-model="tag" :tags="tags" :autocomplete-items="categories.map((category) => ({ text: category }))"
       @tags-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))"
       @tag-order-changed="(newTags) => (goalData.tags = newTags.map((tag) => tag.text))" />
